@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="generator" content="HTML Tidy for HTML5 for Windows version 5.6.0">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, user-scalable=yes">
+  <title>Aleph With Beth Learning Schedule</title>
+  <link rel="icon" href=".images/cropped-Aleph_with_Beth-logo-beth-transparent-1-32x32.png" sizes="32x32" />
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="js/localization.js"></script>
+  <link rel="shortcut icon" type="image/png" href="favicon.png">
+  <!--
+  // Todo:
+  //    - load page whenever a parameter changes and remove Load button
+  -->
+  <style>
+  body {background-color: white;}
+  h1   {color: blue; text-align: center; width: 100%; margin: 0px;}
+  p    {color: black;}
+  .section_header {
+//~         width: 670px;
+        border: 10px solid green;
+        padding: 30px;
+        margin: 10px;
+  }
+  </style>
+</head>
+<body lang="EN-US">
+  <div id="section_header" class="section_header">
+    <h1 id='title1'>Aleph with Beth and Alpha with Angela</h1>
+    <h1 id='title2'>Learning Scheduler</h1><br>
+    <label for="lang" id='lang_label'>Language:</label>
+    <select id="lang" name="lang" onchange=
+        "set_cookie_from_value('lang', 'learning_program_language');">
+          <option value="English">English</option>
+    </select><br>
+    <label for="learning_program" id='learning_program_label'>Learning program:</label>
+    <select id="learning_program" name="learning_program" onchange=
+        "set_cookie_from_value('learning_program', 'learning_program');">
+          <option value="Aleph">Aleph with Beth</option>
+          <option value="Alpha">Alpha with Angela</option>
+    </select><br>
+    <label for="time" id='time_per_day_label'>Time per day:</label>
+    <select id="time"
+        name="video_file" onchange=
+        "set_cookie_from_value('time', 'learning_program_time');">
+          <option value="90:00">90:00</option>
+          <option value="60:00">60:00</option>
+          <option value="30:00">30:00</option>
+    </select><br><br>
+          <button type="button" id="load_button" onclick=
+          "load_from_page(false);">Load</button>
+          <button type="button" id="print_button" onclick=
+          "printLearningSchedule(true);">Print</button>
+          <button type="button" id="download_PDF_button" onclick=
+          "downloadPDF();">Download PDF</button>
+  </div>
+  <div id="display" style="width: 100%; color: black;" title="Learning Schedule"></div>
+  <script>
+  var print_after_load = false;
+
+  // Cookies
+  function setCookie(cname, cvalue, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        var expires = "expires="+d.toUTCString();
+  //~   console.log("Setting cookie " + cname + " to " + cvalue);
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+  function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                }
+        }
+        return "";
+  }
+  function get_cookies_and_set_values() {
+        set_value_from_cookie('learning_program', 'learning_program');
+        set_value_from_cookie('learning_program_time', 'time');
+        set_value_from_cookie('learning_program_language', 'lang');
+  }
+  function set_value_from_cookie(cookie_name, elem_id) {
+        var val = getCookie(cookie_name);
+        if (val != '') {
+                var e = document.getElementById(elem_id);
+                e.value = val;
+  //~             console.log("Setting " + elem_id + " from cookie " + cookie_name + " value=" + val);
+        }
+  }
+  function set_checkbox_from_cookie(cookie_name, elem_id) {
+        var val = getCookie(cookie_name);
+        if (val != '') {
+                var e = document.getElementById(elem_id);
+                e.checked = (val == 'true');
+  //~             console.log("Setting " + elem_id + " from cookie " + cookie_name + " value=" + val);
+        }
+  }
+  function set_cookies_from_values() {
+        set_cookie_from_value('learning_program', 'learning_program');
+        set_cookie_from_value('time', 'learning_program_time');
+        set_cookie_from_value('lang', 'learning_program_language');
+  }
+  function set_cookie_from_checkbox(elem_id, cookie_name) {
+        e = document.getElementById(elem_id);
+        setCookie(cookie_name, e.checked, 365);
+  //~     console.log("Setting cookie " + cookie_name + " from element " + elem_id + " value=" + e.checked);
+  }
+  function set_cookie_from_value(elem_id, cookie_name) {
+        e = document.getElementById(elem_id);
+        setCookie(cookie_name, e.value, 365);
+  //~     console.log("Setting cookie " + cookie_name + " from element " + elem_id + " value=" + e.value);
+      if (elem_id == 'lang') {
+            setLanguage();
+      }
+  }
+
+  function load_from_page(print_afterwards) {
+        var e = document.getElementById("learning_program");
+        var learning_program = e.value;
+        var learning_program_abbr = (e.options[e.selectedIndex].text == "Aleph with Beth") ? "AWB" : "AWA";
+        
+        e = document.getElementById("lang");
+        lang = e.value;
+        console.log("load_from_page lang=" + lang);
+        
+        e = document.getElementById("time");
+        var time = e.options[e.selectedIndex].text;
+        
+        var phrase_file = learning_program_abbr + lang + ".txt";
+        var vid_file = learning_program_abbr + 'Videos.tsv';
+        var opts, out_file;
+        out_file = learning_program_abbr + "Sched_T" + time.substr(0, 2) + "_" + lang + ".htm";
+        opts = '&t=' + time + '&v=' + vid_file + '&o=' + out_file + '&f=' + phrase_file +  '&l=' + lang + '&c=' + learning_program;
+//~         console.log(opts);
+        generate(opts, out_file, print_afterwards);
+  }
+
+  function generate(opts, file_to_open, print_afterwards) {
+        print_after_load = print_afterwards;  // save for after return from generate.php
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                        if (this.responseText.includes("ERROR:")) {
+                              alert(this.responseText.replaceAll("<br>", "\n"));
+                        } else {
+                              console.log(this.responseText);
+  //~                             openInNewTab(file_to_open);
+                              openInDiv(file_to_open);
+                        }
+                }
+        };
+        var versionUpdate = (new Date()).getTime();  // force update
+  //~     console.log("Opts: " + opts);
+        $("#display").text("");
+        xhttp.open("POST", "generate.php?rnd=" + versionUpdate + opts, true);
+        xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhttp.send("msg=test");
+  }
+
+  function openInNewTab(href) { // opens the output file in a new tab
+  Object.assign(document.createElement('a'), {
+    target: '_blank',
+    rel: 'noopener noreferrer',
+    href: href,
+  }).click();
+  }
+
+  function openInDiv(href) { // opens the output file in a new tab
+        var e = document.getElementById("learning_program");
+        var value = e.value;
+        var learning_program = (e.options[e.selectedIndex].text == "Aleph with Beth") ? "AWB" : "AWA";
+        
+        e = document.getElementById("lang");
+        var lang = e.value;
+        
+        e = document.getElementById("time");
+        var time = e.options[e.selectedIndex].text.substr(0, 2);
+        
+        var versionUpdate = (new Date()).getTime();  // force update
+
+        $("#display").on('change', function() {
+//~                 $(window).on('load', function() {
+                console.log('Display has loaded!');
+        });
+        $("#display").load(learning_program + "Sched_T" + time + "_" + lang + ".htm" + "?rnd=" + versionUpdate);
+        console.log('Display has loaded!');
+        if (print_after_load) {
+                printLearningSchedule();
+        }
+  }
+
+  function printLearningSchedule() {
+        $("#section_header").hide();
+        window.print();
+        $("#section_header").show();
+  }
+  
+  function download_file(fileURL, fileName) {
+      var link = document.createElement('a');
+      link.href = fileURL;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  }
+
+  function downloadPDF() {
+        var e = document.getElementById("learning_program");
+        var value = e.value;
+        var learning_program = (e.options[e.selectedIndex].text == "Aleph with Beth") ? "AWB" : "AWA";
+        
+        e = document.getElementById("lang");
+        var lang = e.value;
+        
+        e = document.getElementById("time");
+        var time = e.options[e.selectedIndex].text.substr(0, 2);
+        
+        var versionUpdate = (new Date()).getTime();  // force update
+
+        $("#display").on('change', function() {
+//~                 $(window).on('load', function() {
+                console.log('Display has loaded!');
+        });
+        download_file("./pdf/" + learning_program + "Sched_T" + time + "_" + lang + ".pdf" + "?rnd=" + versionUpdate,  learning_program + "Sched_T" + time + "_" + lang + ".pdf");
+//~         $("#display").load("./pdf/" + learning_program + "Sched_T" + time + "_" + lang + ".pdf" + "?rnd=" + versionUpdate);
+//~         console.log('Display has loaded!');
+//~         if (print_after_load) {
+//~                 printLearningSchedule();
+//~         }
+  }
+  
+  function setLanguagesSelector(lang) {
+      var options_str = "";
+
+     Object.keys(localization).forEach((element, index, array) => {
+            options_str += '<option value="' + element + '">' + localization[lang][element.toLowerCase()] + '</option>';
+      });
+      var e = document.getElementById("lang");
+      e.innerHTML = options_str;
+      e.value = lang;
+  }
+    
+  function setLearningProgramSelector(lang) {
+      var e = document.getElementById("learning_program");
+      var program = e.value;
+      var options_str = "";
+      options_str += '<option value="Aleph">' + localization[lang]['Aleph'] + '</option>';
+      options_str += '<option value="Alpha">' + localization[lang]['Alpha'] + '</option>';
+      e.innerHTML = options_str;
+      e.value = program;
+  }
+    
+  function setLanguage() {
+        var e = document.getElementById("lang");
+        var lang = e.value;
+        $('#lang_label').text(localization[lang]['language']);
+        $('#time_per_day_label').text(localization[lang]['timePerDay']);
+        $('#learning_program_label').text(localization[lang]['Learning program']);
+        $('#load_button').text(localization[lang]['load']);
+        $('#print_button').text(localization[lang]['print']);
+        $('#title1').text(localization[lang]['title1']);
+        $('#title2').text(localization[lang]['title2']);
+        setLanguagesSelector(lang);
+        setLearningProgramSelector(lang);
+  }
+
+  setLanguage();
+  get_cookies_and_set_values();
+  setLanguage();
+  </script>
+</body>
+</html>

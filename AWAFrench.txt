@@ -1,5 +1,5 @@
 ##########################################################################################
-### Language-specific File for Aleph with Beth Learning Schedule
+### Language-specific File for Alpha with Angela Learning Schedule
 ### 
 ### TARGET LANGUAGE: French
 ### 
@@ -59,8 +59,8 @@
 #<intro0>Study Schedule for Lessons &&
 <intro0> Programme d'étude pour les leçons &&
 
-#<intro1>A plan to use Aleph with Beth videos to learn Hebrew.    
-<intro1>Un plan pour apprendre l’hébreu en utilisant les vidéos Aleph avec Beth.
+#<intro1>A plan to use Alpha with Angela videos to learn Grec.    
+<intro1>Un plan pour apprendre l’grec en utilisant les vidéos Alpha avec Angela.
 
 #<intro2>No prior knowledge is assumed.
 <intro2>Cela ne suppose aucune connaissance préalable.
@@ -80,11 +80,11 @@
 #<howto0>Videos to help you get started
 <howto0>Les Vidéos qui peut vous aider commencer
 
-#<howto1>How to Use Aleph with Beth Videos to Learn Biblical Hebrew (LANGUAGE, MM:SS)
-<howto1>How to Use Aleph with Beth Videos to Learn Biblical Hebrew (En anglais, 10:19)
+#<howto1>How to Use Alpha with Angela Videos to Learn Biblical Greek (LANGUAGE, MM:SS)
+<howto1>How to Use Alpha with Angela Videos to Learn Biblical Grec (En anglais, 10:19)
 
 #<howto2>https://www.youtube.com/watch?v=GEJYWpZV2TM (language-specific link)
-<howto2>How to use Aleph with Beth videos - Communicative Biblical Hebrew (pour tous les langues, 6:36)
+<howto2>How to use Alpha with Angela videos - Communicative Biblical Greek (pour tous les langues, 6:36)
 
 #<howto3>Seven tips for studying Biblical languages (LANGUAGE, MM:SS)
 <howto3>Seven tips for studying Biblical languages (En anglais, 6:53)
@@ -92,8 +92,8 @@
 #<howto4>https://www.youtube.com/watch?v=KDpOkbrVFuM (language-specific link)
 <howto4>https://www.youtube.com/watch?v=KDpOkbrVFuM
 
-#<howto5>How to Keep Growing in Hebrew if You’ve Reached the End of Our Videos 
-<howto5>How to Keep Growing in Hebrew if You’ve Reached the End of Our Videos 
+#<howto5>How to Keep Growing in Greek if You’ve Reached the End of Our Videos 
+<howto5>How to Keep Growing in Greek if You’ve Reached the End of Our Videos 
 
 #<howto6>https://www.youtube.com/watch?v=n8GfIhf3lXQ (Language-specific link)
 <howto6>https://www.youtube.com/watch?v=n8GfIhf3lXQ
@@ -107,29 +107,29 @@
 #<links0>Useful Links
 <links0>Liens utiles
 
-#<links1>Aleph with Beth Home Page
-<links1>La page d‘accueil d‘Aleph with Beth
+#<links1>Alpha with Angela Home Page
+<links1>La page d‘accueil d‘Alpha with Angela
 
-#<links2>https://freehebrew.online
-<links2>https://freehebrew.online/fr/home-french/
+#<links2>https://freegreek.online
+<links2>https://freegreek.online/fr/home-french/
 
 #<links3>All Resources (Lesson Scripts, Quizzes, Grammar, Vocabulary, Worksheets, etc.):
 <links3>Toutes les ressources (Texte des leçons, Les quiz, Grammaire, Vocabulaire, Feuilles de travail, etc.):
 
-#<links4>https://freehebrew.online/resources
-<links4>https://freehebrew.online/resources/
+#<links4>https://freegreek.online/resources
+<links4>https://freegreek.online/resources/
 
-#<links5>Video Playlists: https://www.youtube.com/c/AlephwithBeth/playlists
-<links5>Listes des videos: https://www.youtube.com/c/AlephwithBeth/playlists
+#<links5>Video Playlists: https://www.youtube.com/c/AlphawithAngela/playlists
+<links5>Listes des videos: https://www.youtube.com/c/AlphawithAngela/playlists
 
-#<links6>Quizzes: https://hebrew.bibleling.org/#/14
-<links6>Les Quiz: https://hebrew.bibleling.org/#/14
+#<links6>Quizzes: https://greek.bibleling.org/#/14
+<links6>Les Quiz: https://greek.bibleling.org/#/14
 
 #<links7>Alphabet Practice Worksheet:          
 <links7>Feuille de travail pour practiquer escribir l'alphabet:    
      
-#<links8>https://www.mediafire.com/file/lgz8tc0udvmipds/Aleph_with_Beth_Writing_the_Alphabet_worksheet.pdf/file
-<links8>https://www.mediafire.com/file/lgz8tc0udvmipds/Aleph_with_Beth_Writing_the_Alphabet_worksheet.pdf/file
+#<links8>https://www.mediafire.com/file/lgz8tc0udvmipds/Alpha_with_Angela_Writing_the_Alphabet_worksheet.pdf/file
+<links8>https://www.mediafire.com/file/lgz8tc0udvmipds/Alpha_with_Angela_Writing_the_Alphabet_worksheet.pdf/file
 
 ##########################################################################################
 ### Tags for various steps based on video type in the learning schedule
@@ -141,13 +141,13 @@
 #<watch_repeat>Watch Lesson && repeating aloud.
 <watch_repeat>Regardez la leçon && en répétant à voix haute.
 
-#<watch_story_listen>Watch Hebrew Easy Story && just listening.
-<watch_story_listen>Regardez l'histoire hébreu simple && en écoutant seulement.
+#<watch_story_listen>Watch Greek Easy Story && just listening.
+<watch_story_listen>Regardez l'histoire Grec simple && en écoutant seulement.
 
-#<watch_story_repeat>Watch Hebrew Easy Story && repeating aloud.
-<watch_story_repeat>Regardez l'histoire hébreu simple && en répétant à voix haute.
+#<watch_story_repeat>Watch Greek Easy Story && repeating aloud.
+<watch_story_repeat>Regardez l'histoire Grec simple && en répétant à voix haute.
 
-#<write10>Practice writing each of the Hebrew letters from Lesson && ten times.
+#<write10>Practice writing each of the Greek letters from Lesson && ten times.
 <write10>Entraînez-vous à écrire 10 fois chacune des lettres hébraïques de la leçon &&.
 
 #<related>Review video for Lesson &&.
@@ -160,13 +160,13 @@
 <read_script>Lisez deux fois le texte de la leçon && à haute voix.
 
 #<read_verse>Read verse(s) && aloud twice.
-<read_verse>Lisez en hébreu chacun des verset(s) deux fois à voix haute &&.
+<read_verse>Lisez en Grec chacun des verset(s) deux fois à voix haute &&.
 
 #<quiz_yes>Take Quiz && online at Bibleling.org. I got _____% the 1st time (and _____% the 2nd time).
 <quiz_yes>Faisez le quiz && en ligne sur Bibleling.org. J’ai obtenu _____% la 1ère fois  (and _____% la 2ème fois).
 
-#<quiz_no>Keep checking https://hebrew.bibleling.org/#/14 for new quizzes for lesson &&.
-<quiz_no>Continuez à vérifier https://hebrew.bibleling.org/#/14 s'il y a des quiz nouveaux pour la leçon &&.
+#<quiz_no>Keep checking https://greek.bibleling.org/#/14 for new quizzes for lesson &&.
+<quiz_no>Continuez à vérifier https://greek.bibleling.org/#/14 s'il y a des quiz nouveaux pour la leçon &&.
 
 #<extra>Video of story from Lesson && is available for review.
 <extra>On peut regarder le vidéo de l'histoire de la leçon && comme une révision.

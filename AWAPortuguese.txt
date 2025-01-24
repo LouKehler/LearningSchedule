@@ -1,7 +1,7 @@
 ##########################################################################################
-### Language-specific File for Aleph with Beth Learning Schedule
+### Language-specific File for Alpha with Angela Learning Schedule
 ### 
-### TARGET LANGUAGE: French
+### TARGET LANGUAGE: Portuguese
 ### 
 ### Input file for awbsched.pl.
 ### 
@@ -40,7 +40,6 @@
 ### 
 ##########################################################################################
 
-
 ##########################################################################################
 ### Tag for Locale (Used to select the correct video titles from the database file)
 ### Use standard Unix locale names for consistency.
@@ -57,19 +56,19 @@
 ### N = 0 for the heading. N values must be sequential.
 ##########################################################################################
 #<intro0>Study Schedule for Lessons &&
-<intro0> Programme d'étude pour les leçons &&
+<intro0>Horario de Aprendizaje para Lecciones &&
 
-#<intro1>A plan to use Aleph with Beth videos to learn Hebrew.    
-<intro1>Un plan pour apprendre l’hébreu en utilisant les vidéos Aleph avec Beth.
+#<intro1>A plan to use Alpha with Angela videos to learn grego.    
+<intro1>Un plan para usar los videos de Alpha con Angela para aprender grego.
 
 #<intro2>No prior knowledge is assumed.
-<intro2>Cela ne suppose aucune connaissance préalable.
+<intro2>No se asume ningún conocimiento previo.
 
 #<intro3>Feel free to download and tailor it to your own schedule.
-<intro3>Vous êtes libre à déchargez cela et adaptez-le à vôtres préferences.
+<intro3>Siéntase libre de descargarlo y adaptarlo a su propio horario.
 
 #<intro4>Print it out if you can and start checking off your progress!
-<intro4>Imprimez ce plan si c'est possible et commencez à vérifier votre progrès!
+<intro4>¡Imprímalo si puede y empieza a comprobar tu progreso!
 
 ##########################################################################################
 ### Tags for How-to Tips and Videos at the beginning of the learning schedule
@@ -78,22 +77,22 @@
 ### Tab characters in front of URLs for formatting must be in this file.
 ##########################################################################################
 #<howto0>Videos to help you get started
-<howto0>Les Vidéos qui peut vous aider commencer
+<howto0>Videos que pueden ayudarte a empezar
 
-#<howto1>How to Use Aleph with Beth Videos to Learn Biblical Hebrew (LANGUAGE, MM:SS)
-<howto1>How to Use Aleph with Beth Videos to Learn Biblical Hebrew (En anglais, 10:19)
+#<howto1>How to Use Alpha with Angela Videos to Learn Biblical Greek (LANGUAGE, MM:SS)
+<howto1>How to use Alpha with Angela videos - Communicative Biblical Greek (cualquier idioma, 6:36)
 
 #<howto2>https://www.youtube.com/watch?v=GEJYWpZV2TM (language-specific link)
-<howto2>How to use Aleph with Beth videos - Communicative Biblical Hebrew (pour tous les langues, 6:36)
+<howto2>https://www.youtube.com/watch?v=_ZM0Y-Xy69M
 
 #<howto3>Seven tips for studying Biblical languages (LANGUAGE, MM:SS)
-<howto3>Seven tips for studying Biblical languages (En anglais, 6:53)
+<howto3>7 tips para el estudio de los idiomas bíblicos (Español, 8:31)
 
 #<howto4>https://www.youtube.com/watch?v=KDpOkbrVFuM (language-specific link)
-<howto4>https://www.youtube.com/watch?v=KDpOkbrVFuM
+<howto4>https://www.youtube.com/watch?v=yoxv0dzEMlo
 
-#<howto5>How to Keep Growing in Hebrew if You’ve Reached the End of Our Videos 
-<howto5>How to Keep Growing in Hebrew if You’ve Reached the End of Our Videos 
+#<howto5>How to Keep Growing in Greek if You’ve Reached the End of Our Videos 
+<howto5>How to Keep Growing in Greek if You’ve Reached the End of Our Videos 
 
 #<howto6>https://www.youtube.com/watch?v=n8GfIhf3lXQ (Language-specific link)
 <howto6>https://www.youtube.com/watch?v=n8GfIhf3lXQ
@@ -104,175 +103,179 @@
 ### N = 0 for the heading. N values must be sequential.
 ### Tab characters in front of URLs for formatting must be in this file.
 ##########################################################################################
+
 #<links0>Useful Links
-<links0>Liens utiles
+<links0>Enlaces útiles
 
-#<links1>Aleph with Beth Home Page
-<links1>La page d‘accueil d‘Aleph with Beth
+#<links1>Alpha with Angela Home Page
+<links1>La página de inicio de Alpha with Angela
 
-#<links2>https://freehebrew.online
-<links2>https://freehebrew.online/fr/home-french/
+#<links2>https://freegreek.online
+<links2>https://freegreek.online/es/elementor-2662/
+
 
 #<links3>All Resources (Lesson Scripts, Quizzes, Grammar, Vocabulary, Worksheets, etc.):
-<links3>Toutes les ressources (Texte des leçons, Les quiz, Grammaire, Vocabulaire, Feuilles de travail, etc.):
+<links3>Todos los Materiales (Textos del guión, Exámenes, Gramática, Vocabulario, Hojas de trabajo, etc.):
 
-#<links4>https://freehebrew.online/resources
-<links4>https://freehebrew.online/resources/
+#<links4>https://freegreek.online/resources
+<links4>https://freegreek.online/es/recursos/
 
-#<links5>Video Playlists: https://www.youtube.com/c/AlephwithBeth/playlists
-<links5>Listes des videos: https://www.youtube.com/c/AlephwithBeth/playlists
+#<links5>Video Playlists: https://www.youtube.com/c/AlphawithAngela/playlists
+<links5>Lista de videos: https://www.youtube.com/c/AlphawithAngela/playlists
 
-#<links6>Quizzes: https://hebrew.bibleling.org/#/14
-<links6>Les Quiz: https://hebrew.bibleling.org/#/14
+#<links6>Quizzes: https://greek.bibleling.org/#/14
+<links6>Exámenes: https://greek.bibleling.org/#/14
 
 #<links7>Alphabet Practice Worksheet:          
-<links7>Feuille de travail pour practiquer escribir l'alphabet:    
+<links7>Hoja de trabajo para practicar el alfabeto:    
      
-#<links8>https://www.mediafire.com/file/lgz8tc0udvmipds/Aleph_with_Beth_Writing_the_Alphabet_worksheet.pdf/file
-<links8>https://www.mediafire.com/file/lgz8tc0udvmipds/Aleph_with_Beth_Writing_the_Alphabet_worksheet.pdf/file
+#<links8>https://www.mediafire.com/file/lgz8tc0udvmipds/Alpha_with_Angela_Writing_the_Alphabet_worksheet.pdf/file
+<links8>https://www.mediafire.com/file/lgz8tc0udvmipds/Alpha_with_Angela_Writing_the_Alphabet_worksheet.pdf/file
 
 ##########################################################################################
 ### Tags for various steps based on video type in the learning schedule
 ##########################################################################################
 
 #<watch_listen>Watch Lesson && just listening.
-<watch_listen>Regardez la leçon && en écoutant seulement.
+<watch_listen>Vea la Lección && solo escuchando.
 
 #<watch_repeat>Watch Lesson && repeating aloud.
-<watch_repeat>Regardez la leçon && en répétant à voix haute.
+<watch_repeat>Vea la Lección && repitiéndola en voz alta.
 
-#<watch_story_listen>Watch Hebrew Easy Story && just listening.
-<watch_story_listen>Regardez l'histoire hébreu simple && en écoutant seulement.
+#<watch_story_listen>Watch Greek Easy Story && just listening.
+<watch_story_listen>Vea la historia fácil en grego && solo escuchando.
 
-#<watch_story_repeat>Watch Hebrew Easy Story && repeating aloud.
-<watch_story_repeat>Regardez l'histoire hébreu simple && en répétant à voix haute.
+#<watch_story_repeat>Watch Greek Easy Story && repeating aloud.
+<watch_story_repeat>Vea la historia fácil en grego && repitiéndola en voz alta.
 
-#<write10>Practice writing each of the Hebrew letters from Lesson && ten times.
-<write10>Entraînez-vous à écrire 10 fois chacune des lettres hébraïques de la leçon &&.
+#<write10>Practice writing each of the Greek letters from Lesson && ten times.
+<write10>Practique escribiendo cada una de las letras hebreas de la Lección && diez veces.
 
-#<related>Review video for Lesson &&.
-<related>Révisez le vidéo de Leçon &&.
+#<related>Review video Lesson &&.
+<related>Revise el video Lección &&.
 
-#<review_game>Watch review game, &&, and try to respond before hearing the answer.
-<review_game>Regardez le vidéo de la révision, &&, et essayez de répondre avant d’entendre la réponse.
+#<review_game>Watch review video, &&, and try to respond before hearing the answer.
+<review_game>Vea el video de repaso, &&, e intente responder antes de escuchar la respuesta.
 
 #<read_script>Read the script for Lesson && aloud twice.
-<read_script>Lisez deux fois le texte de la leçon && à haute voix.
+<read_script>Lea el texto del guión de la Lección && en voz alta dos veces.
 
-#<read_verse>Read verse(s) && aloud twice.
-<read_verse>Lisez en hébreu chacun des verset(s) deux fois à voix haute &&.
+#<read_verse>Read verses && aloud twice.
+<read_verse>Lea los versículos && en voz alta dos veces.
 
 #<quiz_yes>Take Quiz && online at Bibleling.org. I got _____% the 1st time (and _____% the 2nd time).
-<quiz_yes>Faisez le quiz && en ligne sur Bibleling.org. J’ai obtenu _____% la 1ère fois  (and _____% la 2ème fois).
+<quiz_yes>Tome el examen && en línea en Bibleling.org. Obtuve _____% la 1ra vez (y _____% la 2da vez).
 
-#<quiz_no>Keep checking https://hebrew.bibleling.org/#/14 for new quizzes for lesson &&.
-<quiz_no>Continuez à vérifier https://hebrew.bibleling.org/#/14 s'il y a des quiz nouveaux pour la leçon &&.
+#<quiz_no>Keep checking https://greek.bibleling.org/#/14 for new quizzes for lesson &&.
+<quiz_no>Sigua revisando https://greek.bibleling.org/#/14 para ver si hay nuevos exámenes para la Lección &&.
 
 #<extra>Video of story from Lesson && is available for review.
-<extra>On peut regarder le vidéo de l'histoire de la leçon && comme une révision.
+<extra>Hay un video de la historia de la Lección && para revisar.
 
 #<alpha_extra>Watch supplemental video for Lesson && twice.
-<alpha_extra>Regardez deux fois le vidéo supplémentaire pour la leçon &&.
+<alpha_extra>Vea el video complementario para la Leccíon && dos veces.
 
 #<optional>Watch optional video &&.
-<optional>Regardez le vidéo optionnel &&.
+<optional>Vea el video opcional &&.
 
 #<worship>Watch song video &&. Try to sing along.
-<worship>Regardez le vidéo de chanson &&. Essayez de chanter avec lui.
+<worship>Vea el video de la canción &&. Tratar de cantar al mismo tiempo.
 
 #<time>Approximate Time: &&
-<time>Temps approximatif: &&
+<time>Tiempo Aproximado: &&
 
 #<longest>Longest Study Day (mm:ss): &&
-<longest>Le jour d'étude le plus long (mm:ss): &&
+<longest>Día de estudio más largo (mm:ss): &&
 
 #<shortest>Shortest Study Day (mm:ss): &&
-<shortest>Le jour d'étude le plus court (mm:ss): &&
+<shortest>Día de estudio más corto (mm:ss): &&
 
 #<average>Average Study Day (mm:ss): &&
-<average>Le jour d'étude moyen (mm:ss): &&
+<average>Día de estudio medio (mm:ss): &&
 
 #<total_days>Total Number of Study Days: &&
-<total_days>Le compte total des jours d'étude: &&
+<total_days>Cuenta total de los días de estudio: &&
 
 #<total_time>Total Study Time (hh:mm:ss): &&
-<total_time>Le compte total du temps d'étude (hh:mm:ss): &&
+<total_time>Tiempo Total de Estudio (hh:mm:ss): &&
 
 #<week>Week
-<week>Semaine
+<week>Semana
+
 #<day>Day
-<day>Jour
+<day>Día
+
 #<more>More Lessons Are Coming!
-<more>Plus de leçons viennent!
+<more>¡Vienen más lecciones!
 #
 ##########################################################################################
 ### Tags Books of the Bible
 ##########################################################################################
 <Bible>
-<Genesis>Genèse
-<Exodus>Exode
-<Leviticus>Lévitique
-<Numbers>Nombres
-<Deuteronomy>Deutéronome
+<Genesis>Gênesis
+<Exodus>Êxodo
+<Leviticus>Levítico
+<Numbers>Números
+<Deuteronomy>Deuteronômio
 <Joshua>Josué
-<Judges>Juges
-<Ruth>Ruth
+<Judges>Juizes
+<Ruth>Rute
 <1 Samuel>1 Samuel
 <2 Samuel>2 Samuel
-<1 Kings>1 Rois
-<2 Kings>2 Rois
-<1 Chronicles>1 Chroniques
-<2 Chronicles>2 Chroniques
+<1 Kings>1 Reis
+<2 Kings>2 Reis
+<1 Chronicles>1 Crônicas
+<2 Chronicles>2 Crônicas
 <Ezra>Esdras
-<Nehemiah>Néhémie
-<Esther>Esther
-<Job>Job
-<Psalm>Psaume
-<Proverbs>Proverbes
-<Ecclesiastes>Ecclésiaste
-<Song of Solomon>Cantique des cantiques
-<Isaiah>Ésaïe
-<Jeremiah>Jérémie
-<Lamentations>Lamentations
-<Ezekiel>Ézéchiel
+<Nehemiah>Neemias
+<Esther>Ester
+<Job>Jó
+<Psalm>Salmos
+<Proverbs>Provérbios
+<Ecclesiastes>Eclesiastes
+<Song of Solomon>Cantares
+<Isaiah>Isaías
+<Jeremiah>Jeremias
+<Lamentations>Lamentações
+<Ezekiel>Ezequiel
 <Daniel>Daniel
-<Hosea>Osée
-<Joel>Joël
-<Amos>Amos
-<Obadiah>Abdias
+<Hosea>Oséias
+<Joel>Joel
+<Amos>Amós
+<Obadiah>Obadias
 <Jonah>Jonas
-<Micah>Michée
-<Nahum>Nahum
-<Habbakkuk>Habakuk
-<Zephaniah>Sophonie
-<Haggai>Aggée
-<Zechariah>Zacharie
-<Malachi>Malachie
-<Matthew>Matthieu
-<Mark>Marc
-<Luke>Luc
-<John>Jean
-<Acts>Actes
-<Romans>Romains
-<1 Corinthians>1 Corinthiens
-<2 Corinthians>2 Corinthiens
-<Galatians>Galates
-<Ephesians>Éphésiens
-<Philippians>Philippiens
-<Colossians>Colossiens
-<1 Thessalonians>1 Thessaloniciens
-<2 Thassalonians>2 Thessaloniciens
-<1 Timothy>1 Timothée
-<2 Timothy>2 Timothée
-<Titus>Tite
-<Philemon>Philémon
-<Hebrews>Hébreux
-<James>Jacques
-<1 Peter>1 Pierre
-<2 Peter>2 Pierre
-<1 John>1 Jean
-<2 John>2 Jean
-<3 John>3 Jean
-<Jude>Jude
-<Revelation>Apocalypse
+<Micah>Miquéias
+<Nahum>Naum
+<Habbakkuk>Habacuque
+<Zephaniah>Sofonías
+<Haggai>Ageu
+<Zechariah>Zacarias
+<Malachi>Malaquías
+<Matthew>Mateus
+<Mark>Marcos
+<Luke>Lucas
+<John>João
+<Acts>Atos
+<Romans>Romanos
+<1 Corinthians>1 Corintios
+<2 Corinthians>2 Corintios
+<Galatians>Gálatas
+<Ephesians>Efésios
+<Philippians>Filipensis
+<Colossians>Colossenses
+<1 Thessalonians>1 Tessalonicenses
+<2 Thassalonians>2 Tessalonicenses
+<1 Timothy>1 Timóteo
+<2 Timothy>2 Timóteo
+<Titus>Tito
+<Philemon>Filemón
+<Hebrews>Hebreus
+<James>Tiago
+<1 Peter>1 Pedro
+<2 Peter>2 Pedro
+<1 John>1 João
+<2 John>2 João
+<3 John>3 João
+<Jude>Judas
+<Revelation>Apocalipse
 </Bible>
