@@ -1,27 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="generator" content="HTML Tidy for HTML5 for Windows version 5.6.0">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, user-scalable=yes">
-  <title>Aleph With Beth Learning Schedule</title>
+  <title>Aleph With Beth and Alpha with Angela Learning Schedule</title>
   <link rel="icon" href=".images/cropped-Aleph_with_Beth-logo-beth-transparent-1-32x32.png" sizes="32x32" />
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="js/localization.js"></script>
   <link rel="shortcut icon" type="image/png" href="favicon.png">
   <!--
   // Todo:
-  //    - load page whenever a parameter changes and remove Load button
+  //    - Figure out a way to generate the PDFs automatically from PHP without the overhead of a large library.
+  //
+  // Revision history:
+  // 2025/01/02 - SK - converted Perl program created by Carol C. Kankelborg to HTML/JS/PHP
+  // 2025/01/27 - SK - automatically load page whenever a parameter changes and remove Load button  
+  // 2025/02/08 - SK - Switch to only generating HTML lessons if they don't exist or are older than the files
+  //                          - they are based on. This will speed up loading and reduce overhead.
   -->
   <style>
   body {background-color: white;}
-  h1   {color: blue; text-align: center; width: 100%; margin: 0px;}
+  #section_header h1   {color: blue; text-align: center; width: 100%; margin: 0px; font-size: 1.5em;}
   p    {color: black;}
   .section_header {
-//~         width: 670px;
-        border: 10px solid green;
-        padding: 30px;
+/*         width: 670px; */
+        border: 2px solid darkblue;
+        padding: 10px;
         margin: 10px;
+  }
+  #display {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: wrap;
+  }
+/*  #print_button {
+      float: right;
+  } */
+ @media (max-width: 600px) {
+      #section_header h1   {margin: 0px; font-size: 1em;}
+      #display {width: 100%;}
   }
   </style>
 </head>
@@ -29,17 +46,20 @@
   <div id="section_header" class="section_header">
     <h1 id='title1'>Aleph with Beth and Alpha with Angela</h1>
     <h1 id='title2'>Learning Scheduler</h1><br>
+    
     <label for="lang" id='lang_label'>Language:</label>
     <select id="lang" name="lang" onchange=
         "set_cookie_from_value('lang', 'learning_program_language');">
           <option value="English">English</option>
     </select><br>
+    
     <label for="learning_program" id='learning_program_label'>Learning program:</label>
     <select id="learning_program" name="learning_program" onchange=
         "set_cookie_from_value('learning_program', 'learning_program');">
           <option value="Aleph">Aleph with Beth</option>
           <option value="Alpha">Alpha with Angela</option>
     </select><br>
+    
     <label for="time" id='time_per_day_label'>Time per day:</label>
     <select id="time"
         name="video_file" onchange=
@@ -48,18 +68,18 @@
           <option value="60:00">60:00</option>
           <option value="30:00">30:00</option>
     </select><br><br>
-          <button type="button" id="load_button" onclick=
-          "load_from_page(false);">Load</button>
-          <button type="button" id="print_button" onclick=
-          "printLearningSchedule(true);">Print</button>
-          <button type="button" id="download_PDF_button" onclick=
-          "downloadPDF();">Download PDF</button>
+    
+    <button type="button" id="print_button" onclick="printLearningSchedule();">Print</button>
+    
+    <!-- button type="button" id="download_PDF_button" onclick="downloadPDF();">Download PDF</button -->
   </div>
-  <div id="display" style="width: 100%; color: black;" title="Learning Schedule"></div>
+  
+  <div id="display" title="Learning Schedule"></div>
   <script>
-  var print_after_load = false;
-
+  
+  ////////////////////////////////////////////////
   // Cookies
+  ////////////////////////////////////////////////
   function setCookie(cname, cvalue, exdays) {
         var d = new Date();
         d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -102,26 +122,25 @@
   //~             console.log("Setting " + elem_id + " from cookie " + cookie_name + " value=" + val);
         }
   }
-  function set_cookies_from_values() {
-        set_cookie_from_value('learning_program', 'learning_program');
-        set_cookie_from_value('time', 'learning_program_time');
-        set_cookie_from_value('lang', 'learning_program_language');
-  }
-  function set_cookie_from_checkbox(elem_id, cookie_name) {
-        e = document.getElementById(elem_id);
-        setCookie(cookie_name, e.checked, 365);
-  //~     console.log("Setting cookie " + cookie_name + " from element " + elem_id + " value=" + e.checked);
-  }
-  function set_cookie_from_value(elem_id, cookie_name) {
+//~   function set_cookie_from_checkbox(elem_id, cookie_name) {
+//~         e = document.getElementById(elem_id);
+//~         setCookie(cookie_name, e.checked, 365);
+//~   //~     console.log("Setting cookie " + cookie_name + " from element " + elem_id + " value=" + e.checked);
+//~   }
+  function set_cookie_from_value(elem_id, cookie_name) { // this happens when the user changes a value
         e = document.getElementById(elem_id);
         setCookie(cookie_name, e.value, 365);
   //~     console.log("Setting cookie " + cookie_name + " from element " + elem_id + " value=" + e.value);
       if (elem_id == 'lang') {
             setLanguage();
       }
+      load_from_page();
   }
 
-  function load_from_page(print_afterwards) {
+  ////////////////////////////////////////////////
+  //  functions to load a page and print
+  ////////////////////////////////////////////////
+  function load_from_page() {
         var e = document.getElementById("learning_program");
         var learning_program = e.value;
         var learning_program_abbr = (e.options[e.selectedIndex].text == "Aleph with Beth") ? "AWB" : "AWA";
@@ -136,14 +155,13 @@
         var phrase_file = learning_program_abbr + lang + ".txt";
         var vid_file = learning_program_abbr + 'Videos.tsv';
         var opts, out_file;
-        out_file = learning_program_abbr + "Sched_T" + time.substr(0, 2) + "_" + lang + ".htm";
+        out_file = "./html/" + learning_program_abbr + "Sched_T" + time.substr(0, 2) + "_" + lang + ".htm";
         opts = '&t=' + time + '&v=' + vid_file + '&o=' + out_file + '&f=' + phrase_file +  '&l=' + lang + '&c=' + learning_program;
 //~         console.log(opts);
-        generate(opts, out_file, print_afterwards);
+        generate(opts, out_file);
   }
 
-  function generate(opts, file_to_open, print_afterwards) {
-        print_after_load = print_afterwards;  // save for after return from generate.php
+  function generate(opts, file_to_open) {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
@@ -164,18 +182,18 @@
         xhttp.send("msg=test");
   }
 
-  function openInNewTab(href) { // opens the output file in a new tab
-  Object.assign(document.createElement('a'), {
-    target: '_blank',
-    rel: 'noopener noreferrer',
-    href: href,
-  }).click();
-  }
+//~   function openInNewTab(href) { // opens the output file in a new tab
+//~   Object.assign(document.createElement('a'), {
+//~     target: '_blank',
+//~     rel: 'noopener noreferrer',
+//~     href: href,
+//~   }).click();
+//~   }
 
   function openInDiv(href) { // opens the output file in a new tab
         var e = document.getElementById("learning_program");
         var value = e.value;
-        var learning_program = (e.options[e.selectedIndex].text == "Aleph with Beth") ? "AWB" : "AWA";
+        var learning_program_abbr = (e.options[e.selectedIndex].text == "Aleph with Beth") ? "AWB" : "AWA";
         
         e = document.getElementById("lang");
         var lang = e.value;
@@ -189,11 +207,8 @@
 //~                 $(window).on('load', function() {
                 console.log('Display has loaded!');
         });
-        $("#display").load(learning_program + "Sched_T" + time + "_" + lang + ".htm" + "?rnd=" + versionUpdate);
+        $("#display").load("./html/" + learning_program_abbr + "Sched_T" + time + "_" + lang + ".htm" + "?rnd=" + versionUpdate);
         console.log('Display has loaded!');
-        if (print_after_load) {
-                printLearningSchedule();
-        }
   }
 
   function printLearningSchedule() {
@@ -231,11 +246,9 @@
         download_file("./pdf/" + learning_program + "Sched_T" + time + "_" + lang + ".pdf" + "?rnd=" + versionUpdate,  learning_program + "Sched_T" + time + "_" + lang + ".pdf");
 //~         $("#display").load("./pdf/" + learning_program + "Sched_T" + time + "_" + lang + ".pdf" + "?rnd=" + versionUpdate);
 //~         console.log('Display has loaded!');
-//~         if (print_after_load) {
-//~                 printLearningSchedule();
-//~         }
   }
   
+  // functions to set the text of each of the fields of this page according to language
   function setLanguagesSelector(lang) {
       var options_str = "";
 
@@ -258,6 +271,7 @@
   }
     
   function setLanguage() {
+        // set the text for each label and select element based on the language selected
         var e = document.getElementById("lang");
         var lang = e.value;
         $('#lang_label').text(localization[lang]['language']);
@@ -265,15 +279,20 @@
         $('#learning_program_label').text(localization[lang]['Learning program']);
         $('#load_button').text(localization[lang]['load']);
         $('#print_button').text(localization[lang]['print']);
+        $('#download_PDF_button').text(localization[lang]['downloadPDF']);
         $('#title1').text(localization[lang]['title1']);
         $('#title2').text(localization[lang]['title2']);
         setLanguagesSelector(lang);
         setLearningProgramSelector(lang);
   }
 
-  setLanguage();
+  // when the page is loaded get the values of each parameter from cookies they are stored in
+  setLanguage(); // called the first time just to set things up for the cookies
   get_cookies_and_set_values();
+  // set the text based on the language that we now know
   setLanguage();
+  // load the page. Subsequent loads will be done anytime a parameter changes.
+  load_from_page();
   </script>
 </body>
 </html>

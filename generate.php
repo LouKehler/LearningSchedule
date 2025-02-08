@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 //~ debug_print("Syntax OK\n"); # this is before everything as a way to know if this PHP failed syntax
 
 $debug = true;	# Debugging
@@ -7,8 +7,6 @@ $debug_to_log_file = true;
 
 $html_out = true; # output HTML rather than plain text
 $embed_stylesheet = true;
-$generate_if_outfile_exists = true;  # if this is true then this PHP generates the output file whether it exists or not
-													 # if it is false then this PHP just returns so that the calling JavaScript can load it
 
 ################################################################################
 ### awbsched.pl
@@ -30,7 +28,7 @@ $generate_if_outfile_exists = true;  # if this is true then this PHP generates t
 # 				Alpha with Angela is not generating any anyway.
 # 09/05/2024	Added code to substitute the default (i.e. English) video title when
 #				the target language title field is blank in the video database.
-# 12/30/2024   Converted to HTML and PHP by Sheldon Kehler
+# 12/30/2024   Converted to HTML front end and PHP by Sheldon Kehler
 # 12/31/2024    Changed to generate HTML output
 # 01/07/2025	  Incorporated latest changes from Carol
 #
@@ -42,18 +40,16 @@ $generate_if_outfile_exists = true;  # if this is true then this PHP generates t
 # Use a default output file name, based on input name and arguments. (Done, 1/28/22)
 # Change behavior for extra story videos which duplicate lessons. (Done)
 # Split related videos into multiple days if too many. (Done)
-# Check if file is already present and if so, just serve it up - each output file should be unique for a given set of options
+# Check if file is already present and newer than both the video file and language strings file and if so, just serve it up 
+#	- each output file should be unique for a given set of options
 #
 # For Alpha with Angela
-# Tighten up Course option (Don't remember what I meant by this anymore.)
 # Change how bonus lessons are handled. Alpha = a, Aleph = b. Alpha had multiple for 
 #      one lesson (a, b, etc.) (Done, 3/29/23 -- added column in database for suffix.)
 # Handle no quizzes more elegantly. (Done, 3/29/23 -- eliminated the 
 #      "watch for more quizzes message" if quiz count is 0.)
 #
-#
-# Add option to skip blank lines for easier formatting in a word processor.
-# Better yet, format output using html and have the URL as a link.
+# Better yet, format output using html and have the URL as a link. (Done 12/31/2024)
 #
 #
 ################################################################################
@@ -91,6 +87,8 @@ $generate_if_outfile_exists = true;  # if this is true then this PHP generates t
 #	MAKE_SECS
 #   USAGE                    - Prints out Usage message for -h option.
 #
+################################################################################
+
 ################################################################################
 ### Initialization of flags and variables
 ################################################################################
@@ -207,11 +205,19 @@ debug_print("Video List File name is -$video_file-\n");
 debug_print("Input Phrase File name is -$in_file-\n");
 debug_print("Output File name is -$out_file-\n");
 
-# Now we know what the output filename is, check if it exists and if so, just return so that it gets loaded as is
-if (file_exists($out_file) && !$generate_if_outfile_exists) {
-	debug_print("Output file $out_file already exists so return\n");
-	echo "Output file $out_file already exists so just load it\n";
-	return;
+# Now we know what the filenames are, check whether the HTML file is newer than both the videos and the
+# language strings file and if so, just return so that it gets loaded as is. Otherwise fall through and regenerate
+# the HTML file.
+$video_file_timestamp = filemtime($video_file);
+$language_strings_file_timestamp = filemtime($in_file);
+if (file_exists($out_file)) {
+	$html_out_file_timestamp = filemtime($out_file);
+	if ($html_out_file_timestamp > $video_file_timestamp && $html_out_file_timestamp > $language_strings_file_timestamp) {
+		# don't need to re-generate the HTML file - so just return so that the page can load it
+		debug_print("Output file $out_file already exists so just return\n");
+		echo "Output file $out_file already exists so just load it\n";
+		return;
+	}
 }
 
 if (array_key_exists('t', $_GET)) {
@@ -492,7 +498,7 @@ debug_print("Highest Lesson: $max_lesson, Lowest Lesson: $min_lesson\n");
 $outfile = fopen($out_file, "w"); #  || die "ERROR: $! ($out_file)\n";
 fwrite($outfile, $bom);
 
-PRINT_HEADER ($course);
+PRINT_HEADER ();
 
 ################################################################################
 ### Cycle Through Lessons
@@ -566,7 +572,7 @@ function INITIALIZE_HTML () {
 ################################################################################
 function FINALIZE_HTML () {
 ################################################################################
-### Generates the opening lines of the HTML Document and the <head> tag.
+### Generates the closing lines of the HTML Document.
 ### 
 ################################################################################
 
@@ -607,11 +613,66 @@ function HTML_HEADER () {
 }
 
 ################################################################################
-### PRINT_HEADER (course_type)
+### PRINT_INTRO_SECTION (course_type)
 ################################################################################
-function PRINT_HEADER (
-	$course # Placeholder argument to select language course
+function PRINT_INTRO_SECTION (
+	$type # type of intro section (intro, howto, links)
 	) {
+################################################################################
+### Generates introductory section at the beginning of the learning schedule.
+### It called for intro, howto, and links sections.
+### The first line in each category is considered a heading.
+### Any line which contains "https" is considered a link and will be indented.
+###
+################################################################################
+
+	global $phrases, $sub_char, $start_lesson, $end_lesson, $dash, $outfile, $html_out;
+	
+	debug_print("PRINT_INTRO_SECTION Subroutine ($type)\n");
+
+	for ($ix = 0; $ix < count($phrases[$type]); $ix++) {
+	    $str = $phrases[$type][$ix];
+
+	    if ($ix == 0) {
+			if ($type == 'intro') {
+				$str = preg_replace("/$sub_char/", "$start_lesson$dash$end_lesson", $str);
+			}
+			if ($html_out) {
+				fwrite($outfile, "<H1>$str</H1>\n\n");
+			} else {
+				fwrite($outfile, "*** $str ***\n\n");
+			}
+	    } elseif (strpos($str, 'https') !== false) { // has a link
+			$posn = strpos($str, 'https');
+//~ 				echo "ERROR: posn=$posn in $str<br>\n";
+			$txt = substr($str, 0, $posn);
+			$URL = substr($str, $posn) . "\n";
+//~ 			if ($txt == '') {
+//~ 				$txt = $URL;
+//~ 			}
+			if ($html_out) {
+				fwrite($outfile, "<p class='link'>$txt<a href='$URL'>$URL</a></p>\n\n");
+			} else {
+				fwrite($outfile, "\t\t$str\n");
+			}
+	    } else {
+			if ($html_out) {
+				fwrite($outfile, "<p>$str</p>\n");
+			} else {
+				fwrite($outfile, "$str\n");
+			}
+	    }	    	    
+ 	}	
+	if (!$html_out) {
+		fwrite($outfile, "\n\n");
+	}
+	
+}
+
+################################################################################
+### PRINT_HEADER ()
+################################################################################
+function PRINT_HEADER () {
 ################################################################################
 ### Generates introductory information at the beginning of the learning schedule.
 ### It has been generalized for any number of intro, howto, and links lines.
@@ -623,102 +684,19 @@ function PRINT_HEADER (
 ### 
 ################################################################################
 
-	global $phrases, $sub_char, $start_lesson, $end_lesson, $dash, $outfile, $html_out;
+	global $html_out;
 	
-	debug_print("PRINT_HEADER Subroutine ($course)\n");
+	debug_print("PRINT_HEADER Subroutine ()\n");
 	
 	if ($html_out) {
 		INITIALIZE_HTML();
 	}
 	
-	for ($ix = 0; $ix < count($phrases['intro']); $ix++) {
-	    $str = $phrases['intro'][$ix];
-	    
-	    if ($ix ==0) {
-	    	$str = preg_replace("/$sub_char/", "$start_lesson$dash$end_lesson", $str);
-			if ($html_out) {
-				fwrite($outfile, "<H1>$str</H1>\n");
-			} else {
-				fwrite($outfile, "****** $str ******\n\n");
-			}
-	    } else {
-			if ($html_out) {
-				fwrite($outfile, "<p>$str</p>\n\n");
-			} else {
-				fwrite($outfile, "<p>$str</p>\n");
-			}
-	    }
-	    	    
- 	}	
-	if (!$html_out) {
-		fwrite($outfile, "\n\n");
-	}
+	PRINT_INTRO_SECTION('intro', );
 	
+	PRINT_INTRO_SECTION('howto', );
 	
-	for ($ix = 0; $ix < count($phrases['howto']); $ix++) {
-	    $str = $phrases['howto'][$ix];
-
-	    if ($ix == 0) {
-			if ($html_out) {
-				fwrite($outfile, "<H1>$str</H1>\n\n");
-			} else {
-				fwrite($outfile, "*** $str ***\n\n");
-			}
-	    } elseif (strpos($str, 'https') !== false) { // has a link
-			if ($html_out) {
-				$posn = strpos($str, 'https');
-//~ 				echo "ERROR: posn=$posn in $str<br>\n";
-				$label = substr($str, 0, $posn);
-				$str = substr($str, $posn);
-				fwrite($outfile, "<p class='link'>$label<a href='$str'>$str</a></p>\n\n");
-			} else {
-				fwrite($outfile, "\t\t$str\n");
-			}
-	    } else {
-			if ($html_out) {
-				fwrite($outfile, "<p>$str</p>\n");
-			} else {
-				fwrite($outfile, "$str\n");
-			}
-	    }	    	    
- 	}	
-	if (!$html_out) {
-		fwrite($outfile, "\n\n");
-	}
-	
-	
-	for ($ix = 0; $ix < count($phrases['links']); $ix++) {
-	    $str = $phrases['links'][$ix];
-	    
-	    if ($ix ==0) {
-			if ($html_out) {
-				fwrite($outfile, "<H1>$str</H1>\n\n");
-			} else {
-				fwrite($outfile, "*** $str ***\n\n");
-			}
-	    } elseif (strpos($str, 'https') !== false) { // link
-			if ($html_out) {
-				$posn = strpos($str, 'https');
-//~ 				echo "ERROR: posn=$posn in $str<br>\n";
-				$label = substr($str, 0, $posn);
-				$str = substr($str, $posn);
-				fwrite($outfile, "<p class='link'>$label<a href='$str'>$str</a></p>\n\n");
-			} else {
-				fwrite($outfile, "\t\t$str\n");
-			}
-	    } else {
-			if ($html_out) {
-				fwrite($outfile, "<p>$str</p>\n\n");
-			} else {
-				fwrite($outfile, "$str\n");
-			}
-	    }	    	    
- 	}	
-	if ($html_out) {
-		fwrite($outfile, "</div>\n"); // header
-	} else {
-		fwrite($outfile, "\n");
-	}
+	PRINT_INTRO_SECTION('links', );
 	
 	return;
 }
@@ -1056,23 +1034,11 @@ function PRINT_LESSON (
 		debug_print("$"."max_unit=" . $max_unit . "\n");
 		$force_wk = ($mode == $unit_mode) && ($num_n % (2 * $max_unit) == 1) && !$first;
 		$force_dy = false; # Took out Force New Day.
-		if ($html_out) {
-			if ($display_links) {
-				PRINT_LINE($line, 'watch_listen', 1, " (" . $videos[$m_lsns][$title] . ":<br>\n\t<a href='" . $videos[$m_lsns][$url] . "'>" . $videos[$m_lsns][$url] . "</a>)", false, false, $force_dy, $force_wk, __LINE__);
-			} else {
-				PRINT_LINE($line, 'watch_listen', 1, " (<a href='" . $videos[$m_lsns][$url] . "'>" . $videos[$m_lsns][$title] . "</a>)", false, false, $force_dy, $force_wk, __LINE__);
-			}
-		} else {
-			PRINT_LINE($line, 'watch_listen', 1, " (" . $videos[$m_lsns][$title] . ":\n\t" . $videos[$m_lsns][$url] . ")", false, false, $force_dy, $force_wk, __LINE__);
-		}
+		PRINT_LINE($line, 'watch_listen', 1, $videos[$m_lsns][$title], $videos[$m_lsns][$url], false, false, $force_dy, $force_wk, __LINE__);
 		# Force a new day after first video if in UnitX mode unless it is the first day.
 		INCREMENT_COUNTERS (1, 1, $videos[$m_lsns][$duration], 1);
 		$force_dy = ($xmode && !$first && ($videos[$m_lsns][$num] %2 == 1));		
-		if ($display_links) {
-			PRINT_LINE($line, 'watch_repeat', 1, " (" . $videos[$m_lsns][$title] . ":<br>\n\t<a href='" . $videos[$m_lsns][$url] . "'>" . $videos[$m_lsns][$url] . "</a>)", false, false, $force_dy, false, __LINE__);
-		} else {
-			PRINT_LINE($line, 'watch_listen', 1, " (<a href='" . $videos[$m_lsns][$url] . "'>" . $videos[$m_lsns][$title] . "</a>)", false, false, $force_dy, false, __LINE__);
-		}
+		PRINT_LINE($line, 'watch_repeat', 1, $videos[$m_lsns][$title], $videos[$m_lsns][$url], false, false, $force_dy, false, __LINE__);
 		$iter = check_for_max_iterations($iter, __LINE__);
 	}		
 	
@@ -1081,16 +1047,13 @@ function PRINT_LESSON (
 	$iter = 0;
 	foreach ($main_stories_p as $m_stories_p) {
 		debug_print("STORYP1 -$m_stories_p-\n");
-		$line = $videos[$m_stories_p][$title] . " (" . $videos[$m_stories_p][$duration] . ")";
 		INCREMENT_COUNTERS (0, 1, $videos[$m_stories_p][$duration], 1);
 		if ($html_out) {
-			if ($display_links) {
-				PRINT_LINE($line, 'watch_story_listen', 1, "<br>\n\t(<a href='" . $videos[$m_stories_p][$url] . "'>" . $videos[$m_stories_p][$url] . "</a>)", false, false, false, false, __LINE__);
-			} else {
-				PRINT_LINE($line, 'watch_story_listen', 1, " (<a href='" . $videos[$m_stories_p][$url] . "'>" . $videos[$m_stories_p][$title] . "</a>)", false, false, false, false, __LINE__);
-			}
+			$line = "<a href='" . $videos[$m_stories_p][$url] . "'>" . $videos[$m_stories_p][$title] . "</a> (" . $videos[$m_stories_p][$duration] . ")";
+			PRINT_LINE($line, 'watch_story_listen', 1, '', '', false, false, false, false, __LINE__);
 		} else {
-			PRINT_LINE($line, 'watch_story_listen', 1, "\n\t(" . $videos[$m_stories_p][$url] . ")", false, false, false, false, __LINE__);
+			$line = $videos[$m_stories_p][$title] . " (" . $videos[$m_stories_p][$duration] . ")";
+			PRINT_LINE($line, 'watch_story_listen', 1, $videos[$m_stories_p][$url], $videos[$m_stories_p][$url], false, false, false, false, __LINE__);
 		}
 		$iter = check_for_max_iterations($iter, __LINE__);
 	}
@@ -1104,11 +1067,7 @@ function PRINT_LESSON (
 			debug_print("BONUSP -$p_hsh-\n");
 			$line = $videos[$p_hsh][$num] . $videos[$p_hsh][$sfx] . " (" . $videos[$p_hsh][$duration] . ")";
 			INCREMENT_COUNTERS (0, 1, $videos[$p_hsh][$duration], 1);
-			if ($display_links) {
-				PRINT_LINE($line, 'watch_repeat',  1, " (" . $videos[$p_hsh][$title] . ")", false, false, false, false, __LINE__);
-			} else {
-				PRINT_LINE($line, 'watch_repeat',	1, " (<a href='" . $videos[$p_hsh][$url] . "'>" . $videos[$p_hsh][$title] . "</a>)", false, false, false, false, __LINE__);
-			}
+			PRINT_LINE($line, 'watch_repeat',  1, $videos[$p_hsh][$title], $videos[$p_hsh][$url], false, false, false, false, __LINE__);
 			$iter = check_for_max_iterations($iter, __LINE__);
 		}
 	}
@@ -1120,11 +1079,7 @@ function PRINT_LESSON (
 		foreach ($nhash['A'] as $n_hsh) {
 			debug_print("ALPHA_WR -$n_hsh-\n");
 			INCREMENT_COUNTERS (0, 0, $alpha_write_time, 1);
-			if ($display_links) {
-				PRINT_LINE($videos[$n_hsh][$num],  'write10', 	  1, "", false, false, false, false, __LINE__);
-			} else {
-				PRINT_LINE("<a href='" . $videos[$n_hsh][$url] . "'>" . $videos[$n_hsh][$num] . "</a>",  'write10', 	  1, "", false, false, false, false, __LINE__);
-			}
+			PRINT_LINE($videos[$n_hsh][$num],  'write10', 1, '', '', false, false, false, false, __LINE__);
 			$iter = check_for_max_iterations($iter, __LINE__);
 		}
 	}
@@ -1136,11 +1091,7 @@ function PRINT_LESSON (
 		debug_print("MAIN_P -$m_lsns_p-\n");
 		$line = $videos[$m_lsns_p][$num] . " (" . $videos[$m_lsns_p][$duration] . ")";
 		INCREMENT_COUNTERS (1, 1, $videos[$m_lsns_p][$duration], 1);
-		if ($display_links) {
-			PRINT_LINE($line, 'watch_repeat',	1, " (" . $videos[$m_lsns_p][$title] . ")", false, false, false, false, __LINE__);
-		} else {
-			PRINT_LINE($line, 'watch_repeat',	1, " (<a href='" . $videos[$m_lsns_p][$url] . "'>" . $videos[$m_lsns_p][$title] . "</a>)", false, false, false, false, __LINE__);
-		}
+		PRINT_LINE($line, 'watch_repeat',	1, $videos[$m_lsns_p][$title], $videos[$m_lsns_p][$url], false, false, false, false, __LINE__);
 		$iter = check_for_max_iterations($iter, __LINE__);
 	}
 				
@@ -1152,15 +1103,7 @@ function PRINT_LESSON (
 			debug_print("BONUSN -$n_hsh_p-\n");
 			$line = $videos[$n_hsh_p][$num] . $videos[$n_hsh_p][$sfx] . " (" . $videos[$n_hsh_p][$duration] . ")";
 			INCREMENT_COUNTERS (0, 1, $videos[$n_hsh_p][$duration], 1);
-			if ($html_out) {
-				if ($display_links) {
-					PRINT_LINE($line, 'watch_listen',	1, " (" . $videos[$n_hsh_p][$title] . ":<br>\n\t<a href='" . $videos[$n_hsh_p][$url] . "'>" . $videos[$n_hsh_p][$url] . "</a>)", false, false, false, false, __LINE__);
-				} else {
-					PRINT_LINE($line, 'watch_listen',	1, " (<a href='" . $videos[$n_hsh_p][$url] . "'>" . $videos[$n_hsh_p][$title] . "</a>)", false, false, false, false, __LINE__);
-				}
-			} else {
-				PRINT_LINE($line, 'watch_listen',	1, " (" . $videos[$n_hsh_p][$title] . ":\n\t" . $videos[$n_hsh_p][$url] . ")", false, false, false, false, __LINE__);
-			}
+			PRINT_LINE($line, 'watch_listen', 1, $videos[$n_hsh_p][$title], $videos[$n_hsh_p][$url], false, false, false, false, __LINE__);
 			$iter = check_for_max_iterations($iter, __LINE__);
 		}
 	}
@@ -1177,11 +1120,7 @@ function PRINT_LESSON (
 		$combine = !$incl_prev && $first && !(($mode == $unit_mode) && $xmode);
 #		$force_dy = (($mode == $unit_mode) && $first && ($videos[$m_lsns_n][$num] %2 == 1));		
 #		$force_dy = (($mode == $unit_mode) && $xmode && $no_prev && ($videos[$m_lsns_n][$num] %2 == 1));
-		if ($display_links) {
-			PRINT_LINE($line, 'watch_repeat',	1, " (<a href='" . $videos[$m_lsns_n][$url] . "'>" . $videos[$m_lsns_n][$title] . ": " . $videos[$m_lsns_n][$url] . "</a>)", $combine, false, false, false, __LINE__);
-		} else {
-			PRINT_LINE($line, 'watch_repeat',	1, " (<a href='" . $videos[$m_lsns_n][$url] . "'>" . $videos[$m_lsns_n][$title] . "</a>)", $combine, false, false, false, __LINE__);
-		}
+		PRINT_LINE($line, 'watch_repeat', 1, $videos[$m_lsns_n][$title], $videos[$m_lsns_n][$url], $combine, false, false, false, __LINE__);
 		$iter = check_for_max_iterations($iter, __LINE__);
 	}
 	
@@ -1190,12 +1129,13 @@ function PRINT_LESSON (
 	$iter = 0;
 	foreach ($main_stories_p as $m_stories_p) {
 		debug_print("STORYP2 -$m_stories_p-\n");
-		$line = $videos[$m_stories_p][$title] . " (" . $videos[$m_stories_p][$duration] . ")";
 		INCREMENT_COUNTERS (0, 1, $videos[$m_stories_p][$duration], 1);
-		if ($display_links) {
-			PRINT_LINE($line, 'watch_story_repeat',	1, " (<a href='" . $videos[$m_stories_p][$url] . "'>" . $videos[$m_stories_p][$title] . ": " . $videos[$m_stories_p][$url] . "</a>)", false, false, false, false, __LINE__);
+		if ($html_out) {
+			$line = "<a href='" . $videos[$m_stories_p][$url] . "'>". $videos[$m_stories_p][$title] . "</a> (" . $videos[$m_stories_p][$duration] . ")";
+			PRINT_LINE($line, 'watch_story_repeat',	1, '', '', false, false, false, false, __LINE__);
 		} else {
-			PRINT_LINE($line, 'watch_story_repeat',	1, " (<a href='" . $videos[$m_stories_p][$url] . "'>" . $videos[$m_stories_p][$title] . "</a>)", false, false, false, false, __LINE__);
+			$line = $videos[$m_stories_p][$title] . " (" . $videos[$m_stories_p][$duration] . ")";
+			PRINT_LINE($line, 'watch_story_repeat',	1, $videos[$m_stories_p][$title], $videos[$m_stories_p][$url], false, false, false, false, __LINE__);
 		}
 		$iter = check_for_max_iterations($iter, __LINE__);
 	}
@@ -1207,11 +1147,7 @@ function PRINT_LESSON (
 		foreach ($nhash['A'] as $nhsh_a) {
 			debug_print("ALPHA_RD -$nhsh_a-\n");
 			INCREMENT_COUNTERS (0, 0, $alpha_read_time, 2);
-			if ($display_links) {
-				PRINT_LINE($videos[$nhsh_a][$num],   'read_script', 	2, " (<a href='" . $videos[$nhsh_a][$url] . "'>" . $videos[$nhsh_a][$title] . ": " . $videos[$nhsh_a][$url] . "</a>)", false, false, false, false, __LINE__);
-			} else {
-				PRINT_LINE($videos[$nhsh_a][$num],   'read_script', 	2, " (<a href='" . $videos[$nhsh_a][$url] . "'>" . $videos[$nhsh_a][$title] . "</a>)", false, false, false, false, __LINE__);
-			}
+			PRINT_LINE($videos[$nhsh_a][$num],   'read_script', 	2, $videos[$nhsh_a][$title], $videos[$nhsh_a][$url], false, false, false, false, __LINE__);
 			$iter = check_for_max_iterations($iter, __LINE__);
 		}
 	}
@@ -1230,7 +1166,7 @@ function PRINT_LESSON (
 					$num_verses = substr_count($str, ",") + 1;  # Number of verses = number of commas + 1.
 					debug_print("$"."num_verses=$num_verses in $str\n");
 					INCREMENT_COUNTERS (0, 0, $verse_read_time, 2 * $num_verses);
-					PRINT_LINE($line, 'read_verse', 2, "", false, false, false, false, __LINE__);
+					PRINT_LINE($line, 'read_verse', 2, '', '', false, false, false, false, __LINE__);
 				}
 			}
 			$iter = check_for_max_iterations($iter, __LINE__);
@@ -1264,15 +1200,7 @@ function PRINT_LESSON (
 					$line = "$num_p, " . $videos[$phsh_l][$title] . " (" . $videos[$phsh_l][$duration] . "),";
 					if ($line) {
 						INCREMENT_COUNTERS (0, 1, $videos[$phsh_l][$duration], 2);
-						if ($html_out) {
-							if ($display_links) {
-								PRINT_LINE($line,   'alpha_extra', 	2, " (<a href='" . $videos[$phsh_l][$url] . "'>" . $videos[$phsh_l][$title] . ": " . $videos[$phsh_l][$url] . "</a>)", false, false, false, false, __LINE__);
-							} else {
-								PRINT_LINE($line,   'alpha_extra', 	2, " (<a href='" . $videos[$phsh_l][$url] . "'>" . $videos[$phsh_l][$title] . "</a>)", false, false, false, false, __LINE__);
-							}
-						} else {
-							PRINT_LINE($line, 'alpha_extra', 2, "\n\t(" . $videos[$phsh_l][$url] . ")", false, false, false, false, __LINE__);
-						}
+						PRINT_LINE($line,   'alpha_extra', 	2, $videos[$phsh_l][$title], $videos[$phsh_l][$url], false, false, false, false, __LINE__);
 					}
 					$iter = check_for_max_iterations($iter, __LINE__);
 				}
@@ -1285,15 +1213,7 @@ function PRINT_LESSON (
 				$line = "$num_n, " . $videos[$nhsh_l][$title] . " (" . $videos[$nhsh_l][$duration] . "),";
 				if ($line) {
 					INCREMENT_COUNTERS (0, 1, $videos[$nhsh_l][$duration], 2);
-					if ($html_out) {
-						if ($display_links) {
-							PRINT_LINE($line,   'alpha_extra', 	2, " (<a href='" . $videos[$nhsh_l][$url] . "'>" . $videos[$nhsh_l][$title] . ": " . $videos[$nhsh_l][$url] . "</a>)", false, false, false, false, __LINE__);
-						} else {
-							PRINT_LINE($line,   'alpha_extra', 	2, " (<a href='" . $videos[$nhsh_l][$url] . "'>" . $videos[$nhsh_l][$title] . "</a>)", false, false, false, false, __LINE__);
-						}
-					} else {
-						PRINT_LINE($line, 'alpha_extra', 2, "\n\t(" . $videos[$nhsh_l][$url] . ")", false, false, false, false, __LINE__);
-					}
+					PRINT_LINE($line,   'alpha_extra', 	2, $videos[$nhsh_l][$title], $videos[$nhsh_l][$url], false, false, false, false, __LINE__);
 				}
 				$iter = check_for_max_iterations($iter, __LINE__);
 			}
@@ -1318,13 +1238,10 @@ function PRINT_LESSON (
 					if ($line) {
 						INCREMENT_COUNTERS (0, 0, 0, 1);
 						if ($html_out) {
-							if ($display_links) {
-								PRINT_LINE($line,   'extra', 	0, " (<a href='" . $videos[$phsh_x][$url] . "'>" . $videos[$phsh_x][$title] . ": " . $videos[$phsh_x][$url] . "</a>)", false, false, false, false, __LINE__);
-							} else {
-								PRINT_LINE($line,   'extra', 	0, " (<a href='" . $videos[$phsh_x][$url] . "'>" . $videos[$phsh_x][$title] . "</a>)", false, false, false, false, __LINE__);
-							}
+							$line = "$num_p, <a href='" . $videos[$phsh_x][$url] . "'>" . $videos[$phsh_x][$title] . "</a> (" . $videos[$phsh_x][$duration] . "),";
+							PRINT_LINE($line, 'extra', 0, '', '', false, false, false, false, __LINE__);
 						} else {
-							PRINT_LINE($line, 'extra', 0, "\n\t(" . $videos[$phsh_x][$url] . ")", false, false, false, false, __LINE__);
+							PRINT_LINE($line, 'extra', 0, $videos[$phsh_x][$title], $videos[$phsh_x][$url], false, false, false, false, __LINE__);
 						}
 					}
 					$iter = check_for_max_iterations($iter, __LINE__);
@@ -1339,13 +1256,10 @@ function PRINT_LESSON (
 				if ($line) {
 					INCREMENT_COUNTERS (0, 0, 0, 1);
 					if ($html_out) {
-						if ($display_links) {
-							PRINT_LINE($line,   'extra', 	0, " (<a href='" . $videos[$nhsh_x][$url] . "'>" . $videos[$nhsh_x][$title] . ": " . $videos[$nhsh_x][$url] . "</a>)", false, false, false, false, __LINE__);
-						} else {
-							PRINT_LINE($line,   'extra', 	0, " (<a href='" . $videos[$nhsh_x][$url] . "'>" . $videos[$nhsh_x][$title] . "</a>)", false, false, false, false, __LINE__);
-						}
+						$line = "$num_n, <a href='" . $videos[$nhsh_x][$url] . "'>" . $videos[$nhsh_x][$title] . "</a> (" . $videos[$nhsh_x][$duration] . "),";
+						PRINT_LINE($line, 'extra', 0, '', '', false, false, false, false, __LINE__);
 					} else {
-						PRINT_LINE($line, 'extra', 0, "\n\t(" . $videos[$nhsh_x][$url] . ")", false, false, false, false, __LINE__);
+						PRINT_LINE($line, 'extra', 0, $videos[$nhsh_x][$title], $videos[$nhsh_x][$url], false, false, false, false, __LINE__);
 					}
 				}
 				$iter = check_for_max_iterations($iter, __LINE__);
@@ -1361,16 +1275,13 @@ function PRINT_LESSON (
 		$iter = 0;
 		foreach ($nhash['W'] as $nhsh_w) {
 	#		debug_print("SONG -$nhsh_w-\n");
-			$line = $videos[$nhsh_w][$title] . " (" . $videos[$nhsh_w][$duration] . ")";
 			INCREMENT_COUNTERS (0, 1, $videos[$nhsh_w][$duration], 1);
 			if ($html_out) {
-				if ($display_links) {
-					PRINT_LINE($line,   'worship', 	1, " (<a href='" . $videos[$nhsh_w][$url] . "'>" . $videos[$nhsh_w][$title] . ": " . $videos[$nhsh_w][$url] . "</a>)", false, false, false, false, __LINE__);
-				} else {
-					PRINT_LINE($line,   'worship', 	1, " (<a href='" . $videos[$nhsh_w][$url] . "'>" . $videos[$nhsh_w][$title] . "</a>)", false, false, false, false, __LINE__);
-				}
+				$line = "<a href='" . $videos[$nhsh_w][$url] . "'>" . $videos[$nhsh_w][$title] . "</a> (" . $videos[$nhsh_w][$duration] . ")";
+				PRINT_LINE($line, 'worship', 1, '', '', false, false, false, false, __LINE__);
 			} else {
-				PRINT_LINE($line, 'worship', 1, "\n\t(" . $videos[$nhsh_w][$url] . ")", false, false, false, false, __LINE__);
+				$line = $videos[$nhsh_w][$title] . " (" . $videos[$nhsh_w][$duration] . ")";
+				PRINT_LINE($line, 'worship', 1, $videos[$nhsh_w][$title], $videos[$nhsh_w][$url], false, false, false, false, __LINE__);
 			}
 			$iter = check_for_max_iterations($iter, __LINE__);
 		}
@@ -1385,17 +1296,14 @@ function PRINT_LESSON (
 		$iter = 0;
 		foreach ($nhash['R'] as $nhsh_r) {
 	#		debug_print("REVIEW -$nhsh_r-\n");
-			$prev = $videos[$nhsh_r][$num] - 1;
-			$review_n = $videos[$nhsh_r][$title] . " (" . $videos[$nhsh_r][$duration] . ")";
 			INCREMENT_COUNTERS (0, 1, $videos[$nhsh_r][$duration], 1);
+			$prev = $videos[$nhsh_r][$num] - 1;
 			if ($html_out) {
-				if ($display_links) {
-					PRINT_LINE($review_n,   'review_game', 	1, " (<a href='" . $videos[$nhsh_r][$url] . "'>" . $videos[$nhsh_r][$title] . ": " . $videos[$nhsh_r][$url] . "</a>)", false, false, false, false, __LINE__);
-				} else {
-					PRINT_LINE($review_n,   'review_game', 	1, " (<a href='" . $videos[$nhsh_r][$url] . "'>" . $videos[$nhsh_r][$title] . "</a>)", false, false, false, false, __LINE__);
-				}
+				$review_n = "<a href='" . $videos[$nhsh_r][$url] . "'>" . $videos[$nhsh_r][$title] . "</a> (" . $videos[$nhsh_r][$duration] . ")";
+				PRINT_LINE($review_n, 'review_game', 1, '', '', false, false, false, false, __LINE__);
 			} else {
-				PRINT_LINE($review_n, 'review_game', 1, "\n\t(" . $videos[$nhsh_r][$url] . ")", false, false, false, false, __LINE__);
+				$review_n = $videos[$nhsh_r][$title] . " (" . $videos[$nhsh_r][$duration] . ")";
+				PRINT_LINE($review_n, 'review_game', 1, $videos[$nhsh_r][$title], $videos[$nhsh_r][$url], false, false, false, false, __LINE__);
 			}
 			$iter = check_for_max_iterations($iter, __LINE__);
 		}
@@ -1431,16 +1339,16 @@ function PRINT_LESSON (
 	}
 
 	if ($last && ($videos[$lesson_n[0]][$num] < $total_lessons)) {
-		PRINT_LINE("", 'more', 99, "", 0, 1, false, false, false, false, __LINE__);
+		PRINT_LINE("", 'more', 99, '', '', 0, 1, false, false, false, false, __LINE__);
 		fwrite($outfile, "\n");
 	} 
 	
 	if ($last) {
-		PRINT_LINE(MAKE_TIME($max_secs, false),             'longest',    99, "", false, true, false, false, __LINE__);
-		PRINT_LINE(MAKE_TIME($min_secs, false),             'shortest',   99, "", false, true, false, false, __LINE__);
-		PRINT_LINE(MAKE_TIME((int)($tot_time/$tot_days), false), 'average',    99, "", false, true, false, false, __LINE__);
-		PRINT_LINE($tot_days,                           'total_days', 99, "", false, true, false, false, __LINE__);
-		PRINT_LINE(MAKE_TIME($tot_time, true),             'total_time', 99, "", false, true, false, false, __LINE__);
+		PRINT_LINE(MAKE_TIME($max_secs, false), 'longest', 99, '', '', false, true, false, false, __LINE__);
+		PRINT_LINE(MAKE_TIME($min_secs, false), 'shortest', 99, '', '', false, true, false, false, __LINE__);
+		PRINT_LINE(MAKE_TIME((int)($tot_time/$tot_days), false), 'average', 99, '', '', false, true, false, false, __LINE__);
+		PRINT_LINE($tot_days, 'total_days', 99, '', '', false, true, false, false, __LINE__);
+		PRINT_LINE(MAKE_TIME($tot_time, true), 'total_time', 99, '', '', false, true, false, false, __LINE__);
 		
 		fwrite($outfile, "\n");
 		fwrite($outfile, $command);  # Print options used to generate file and time stamp.
@@ -1463,7 +1371,8 @@ function PRINT_LINE (
 	$n,  # Text to substitute
 	$keyx,  # Phrase to use
 	$boxnum,  # Number of checkboxes
-	$append,  # Text to append at the end
+	$append_text, # Text to append at the end
+	$append_link, # actual link as part of append
 	$combine_day,  # Special case in Main Mode. Combine current line with next
 							  # on the first lesson when previous is not include
 	$block_day,  # Block a new day, used when printing Quiz lines.
@@ -1484,7 +1393,7 @@ function PRINT_LINE (
 
 	global $phrases, $max_count, $max_main, $vid_count, $max_vid, $lesson_count, $main_count,
 		$time_count, $max_time, $box, $sub_char, $mode,
-		$main_mode, $video_mode, $unit_mode, $time_mode, $outfile, $bullet, $html_out;
+		$main_mode, $video_mode, $unit_mode, $time_mode, $outfile, $bullet, $html_out, $display_links;
 
 	debug_print("PRINT_LINE Subroutine (caller line number=$caller_line_number)\n"); # $n, $keyx, $boxnum, $append, $combine_day, $block_day, $force_day, $force_week)\n";
 	
@@ -1567,17 +1476,42 @@ function PRINT_LINE (
 	
 	# Make the substitution
 //~ 	debug_print("***** Replacing $sub_char with $n in $line\n");
-	$line = preg_replace('/' . $sub_char . '/', $n, $line);
+	if ($html_out) {
+		if ($keyx == 'quiz_yes') { # handle quizzes differently make the quiz number the link
+			$line = preg_replace('/' . $sub_char . '/', "<a href='$append_link'>$n</a>", $line);
+		} else {
+			$line = preg_replace('/' . $sub_char . '/', $n, $line);
+		}
+	} else {
+		$line = preg_replace('/' . $sub_char . '/', $n, $line);
+	}
 	
 	debug_print( "Key: $keyx, MD $mode, CT $main_count, MX $max_main<br>\n$line\n");
 	
+	if ($append_text == '') {
+		$append_text = $append_link;
+	}
 	$time_str = MAKE_TIME($time_count, false);
 	if ($html_out) {
+		if ($keyx == 'quiz_yes') { # handle quizzes differently
+			$append = "";
+		} else {
+			if ($append_text != '' || $append_link != '') {
+				if ($display_links) {
+					$append = " ($append_text:<br>\n\t<a href='$append_link'>$append_link</a>)";
+				} else {
+					$append = " (<a href='$append_link'>$append_text</a>)";
+				}
+			} else { # nothing to append
+				$append = '';
+			}
+		}
 		fwrite($outfile, "<p class='$keyx'>$boxes$line$append</p>");
-	} else {
-		fwrite($outfile, "$boxes$line$append");
+		debug_print("PRINT_LINE outputting: <p class='$keyx'>$boxes$line$append</p>");
+	} else { // text out
+		fwrite($outfile, "$boxes$line$append_text");
 	}
-	debug_print("PRINT_LINE $"."boxes=$boxes, $"."line=$line, $"."append=$append, $"."main_count=$main_count, $"."vid_count=$vid_count, $"."lesson_count=$lesson_count, $"."time_str=$time_str\n");
+	debug_print("PRINT_LINE $"."boxes=$boxes, $"."line=$line, $"."append=$append_text, $"."main_count=$main_count, $"."vid_count=$vid_count, $"."lesson_count=$lesson_count, $"."time_str=$time_str\n");
 	
 	fwrite($outfile, "\n");
 	
@@ -1740,18 +1674,14 @@ function QUIZ_LOOP (
 	debug_print("QUIZ_LOOP Subroutine ($lnum, $qcnt)\n");
 	
 #		if ($qcnt == 0) { # No quizzes exist for this lesson (yet)
-#			PRINT_LINE($lnum, 'quiz_no', 0, "", false, false, false, false, __LINE__);
+#			PRINT_LINE($lnum, 'quiz_no', 0, '', '', false, false, false, false, __LINE__);
 #		} else {
 		if ($qcnt > 0) { # Quizzes exist for this lesson (yet)
 			$q = 1;
 			# QZ: 
 			while ($q <= $qcnt){
 				INCREMENT_COUNTERS (0, 0, $quiz_take_time, 1);
-				if ($display_links) {
-					PRINT_LINE("$lnum.$q", 'quiz_yes', 1, "<br>\n\t(<a href='" . $videos[$reverse_index_quiz["$lnum.$q"]][$url] . "'>" . $videos[$reverse_index_quiz["$lnum.$q"]][$url] . "</a>)", false, $block_day, false, false, __LINE__);
-				} else {
-					PRINT_LINE("<a href='" . $videos[$reverse_index_quiz["$lnum.$q"]][$url] . "'>$lnum.$q</a>", 'quiz_yes', 1, "", false, $block_day, false, false, __LINE__);
-				}
+				PRINT_LINE("$lnum.$q", 'quiz_yes', 1, $videos[$reverse_index_quiz["$lnum.$q"]][$url], $videos[$reverse_index_quiz["$lnum.$q"]][$url], false, $block_day, false, false, __LINE__);
 				$q++;
 				continue;
 			}		
@@ -1787,11 +1717,7 @@ function PROCESS_RELATED (
 				debug_print("PROCESS_RELATED $rltd_video -> $main_vid\n");
 				# Keep related videos on one day when in unit mode.
 				INCREMENT_COUNTERS (1, 1, $related_avg_time, 1);
-				if ($display_links) {
-					PRINT_LINE($rltd_video, 'related', 1, " (" . $videos[$main_vid][$title] . ":<br>\n\t<a href='" . $videos[$main_vid][$url] . "'>" . $videos[$main_vid][$url] . "</a>)", false, $block_day, false, false, __LINE__);
-				} else {
-					PRINT_LINE($rltd_video, 'related', 1, " (<a href='" . $videos[$main_vid][$url] . "'>" . $videos[$main_vid][$title] . "</a>)",false, $block_day, false, false, __LINE__);
-				}
+				PRINT_LINE($rltd_video, 'related', 1, $videos[$main_vid][$title], $videos[$main_vid][$url], false, $block_day, false, false, __LINE__);
 			}
 		}
 	}
@@ -1827,40 +1753,54 @@ function VIDEO_LIST (
 	
 		$number = sprintf("%3s", $vd['Num']);  # Fornat Lesson Number
 		
-		foreach ($vd['Type'] as $tp) {
-			if (strpos($tp, 'G')) {
-				$lesson_type = "$number (Lesson)";
-			}
-			if (strpos($tp, 'A')) {
-				$lesson_type = "$number (Lesson)";
-			}
-			if (strpos($tp, 'P')) {
-				$lesson_type = "$number (Bonus)";
-			}
-			if (strpos($tp, 'R')) {
-				$lesson_type = "$number (Review)";
-			}
-			if (strpos($tp, 'H')) {
-				$lesson_type = "$number (Song)";
-			}
-			if (strpos($tp, 'Q')) {
-				$lesson_type = "$number (Quiz)";
-			}
-			if (strpos($tp, 'S')) {
-				$lesson_type = "$number (Story)";
-			}
-			if (strpos($tp, 'T')) {
-				$lesson_type = "$number (Story)";
-			}
-			if (strpos($tp, 'L')) {
-				$lesson_type = "$number (Alpha)";
-			}
-			if (strpos($tp, 'X')) {
-				$lesson_type = "$number (Extra)";
-			}
-		}
+		$lesson_type = array(
+			'G'=>'Lesson',
+			'A'=>'Lesson',
+			'P'=>'Bonus',
+			'R'=>'Review',
+			'H'=>'Song',
+			'Q'=>'Quiz',
+			'S'=>'Story',
+			'T'=>'Story',
+			'L'=>'Alpha',
+			'A'=>'Extra'
+		);
+		
+//~ 		foreach ($vd['Type'] as $tp) {
+//~ 			if (strpos($tp, 'G')) {
+//~ 				$lesson_type = "$number (Lesson)";
+//~ 			}
+//~ 			if (strpos($tp, 'A')) {
+//~ 				$lesson_type = "$number (Lesson)";
+//~ 			}
+//~ 			if (strpos($tp, 'P')) {
+//~ 				$lesson_type = "$number (Bonus)";
+//~ 			}
+//~ 			if (strpos($tp, 'R')) {
+//~ 				$lesson_type = "$number (Review)";
+//~ 			}
+//~ 			if (strpos($tp, 'H')) {
+//~ 				$lesson_type = "$number (Song)";
+//~ 			}
+//~ 			if (strpos($tp, 'Q')) {
+//~ 				$lesson_type = "$number (Quiz)";
+//~ 			}
+//~ 			if (strpos($tp, 'S')) {
+//~ 				$lesson_type = "$number (Story)";
+//~ 			}
+//~ 			if (strpos($tp, 'T')) {
+//~ 				$lesson_type = "$number (Story)";
+//~ 			}
+//~ 			if (strpos($tp, 'L')) {
+//~ 				$lesson_type = "$number (Alpha)";
+//~ 			}
+//~ 			if (strpos($tp, 'X')) {
+//~ 				$lesson_type = "$number (Extra)";
+//~ 			}
+//~ 		}
 				
-		fprintf($outfile, $head_fmt[0], $lesson_type);
+//~ 		fprintf($outfile, $head_fmt[0], $lesson_type);
+		fprintf($outfile, $head_fmt[0], "$number(" . $lesson_type[$vd['Type']] . ")");
 		fprintf($outfile, $head_fmt[1], $vd[$headings[1]]);
 		fprintf($outfile, $head_fmt[2], $vd[$headings[2]]);
 		fprint ($outfile, "\n");
