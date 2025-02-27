@@ -8,6 +8,9 @@ $debug_to_log_file = true;
 $html_out = true; # output HTML rather than plain text
 $embed_stylesheet = true;
 
+//~ include 'languages.php';
+ include "gtphrases.php";
+
 ################################################################################
 ### awbsched.pl
 ### 
@@ -99,8 +102,10 @@ $src = "generate.php";
 // Define the BOM for UTF-8
 $bom = pack('CCC', 0xEF, 0xBB, 0xBF);
 if ($debug_to_log_file) {
-	if (!unlink($log_file_name)) {
-		echo 'ERROR: There was an error deleting the file ' . $log_file_name;
+	if (file_exists($log_file_name)) {
+		if (!unlink($log_file_name)) {
+			echo 'ERROR: There was an error deleting the file ' . $log_file_name;
+		}
 	}
 	doLog($bom);
 }
@@ -152,7 +157,7 @@ $max_unit = 1; # recommended one unit, two lessons per week
 
 # Default File names
 $video_file = 'AWBVideos.tsv';              # Default
-$in_file    = "AWBEnglish.txt";  	   		# Default
+$lang_phrase_file    = "AWBEnglish.txt";  	   		# Default
 $out_file   = "AWBEnglish_Schedule.txt";    # Default
 
 # Determine Mode
@@ -181,13 +186,18 @@ if (array_key_exists('x', $_GET)) {
 if (array_key_exists('l', $_GET)) {
 	$language = $_GET['l'];
 }
-$lang2ary = array('English'=>'en', 'French'=>'fr', 'Portuguese'=>'po', 'Spanish'=>'sp');
-$lang2 = $lang2ary[$language];
-$lang3ary = array('English'=>'eng', 'French'=>'fr', 'Portuguese'=>'po', 'Spanish'=>'sp');
-$lang3 = $lang3ary[$language];
+//~ $lang2ary = [];
+//~ for ($i = 0; $i < count($languages); $i++) {
+//~ 	$lang2ary[$languages[$i][0]] = $languages[$i][1];
+//~ 	$lang3ary[$languages[$i][0]] = $languages[$i][1];
+//~ }
+//~ $lang2ary = array('English'=>'en', 'French'=>'fr', 'Portuguese'=>'po', 'Spanish'=>'sp');
+//~ $lang2 = $lang2ary[$language];
+//~ $lang3ary = array('English'=>'eng', 'French'=>'fr', 'Portuguese'=>'po', 'Spanish'=>'sp');
+//~ $lang3 = $lang3ary[$language];
 
 if (array_key_exists('f', $_GET)) {
-	$in_file = $_GET['f'];
+	$lang_phrase_file = $_GET['f'];
 }
 if (array_key_exists('v', $_GET)) {
 	$video_file = $_GET['v'];
@@ -195,21 +205,36 @@ if (array_key_exists('v', $_GET)) {
 if (array_key_exists('o', $_GET)) {
 	$out_file = $_GET['o'];
 } else {
- 	$temp_file = explode(".", $in_file);
+ 	$temp_file = explode(".", $lang_phrase_file);
    	$out_file = $temp_file[0] . "_Schedule." . $temp_file[1];
 	if ($html_out) {
 		$out_file = substr($out_file, 0, -4) . ".htm"; // replace .txt with .htm
 	}
 }
+
 debug_print("Video List File name is -$video_file-\n");
-debug_print("Input Phrase File name is -$in_file-\n");
+debug_print("Input Phrase File name is -$lang_phrase_file-\n");
 debug_print("Output File name is -$out_file-\n");
+
+# check whether the language strings file exists and if it doesn't, then call GT to create it
+if (!file_exists('lang/' . $lang_phrase_file)) {
+  debug_print("Phrase file $lang_phrase_file doesn't exist.\n");
+//~   include "gtphrases.php";
+  debug_print("Calling create_language_phrase_file() to create it\n");
+  create_language_phrase_file($lang_phrase_file);
+	if (!file_exists('lang/' . $lang_phrase_file)) { // still doesn't exist, exit with error
+		debug_print("GT failed to create language file $lang_phrase_file so just return\n");
+		echo "***** Error: GT failed to create language file $lang_phrase_file\n";
+		return;
+	}
+}
+$lang_phrase_file = 'lang/' . $lang_phrase_file; # these are kept in the folder "lang"
 
 # Now we know what the filenames are, check whether the HTML file is newer than both the videos and the
 # language strings file and if so, just return so that it gets loaded as is. Otherwise fall through and regenerate
 # the HTML file.
-$video_file_timestamp = filemtime($video_file);
-$language_strings_file_timestamp = filemtime($in_file);
+$video_file_timestamp = filemtime($video_file); // assume that the video file exists so get it's last modification timestamp
+$language_strings_file_timestamp = filemtime($lang_phrase_file);
 if (file_exists($out_file)) {
 	$html_out_file_timestamp = filemtime($out_file);
 	if ($html_out_file_timestamp > $video_file_timestamp && $html_out_file_timestamp > $language_strings_file_timestamp) {
@@ -269,11 +294,11 @@ $quiz_take_time   =  "3:00";
 $related_avg_time = "20:00";
 
 # UTF-8 constants
-if ($html_out) {
-	$box = '<input type="checkbox">';
-} else {
+//~ if ($html_out) {
+//~ 	$box = '<input type="checkbox">';
+//~ } else {
 	$box    = "\u{25A2}"; # should be a blank check-box
-}
+//~ }
 $bullet = "\u{2022}"; # should be a bullet
 $dash   = "\u{2013}"; # should be en-dash
 
@@ -395,7 +420,7 @@ elseif ($mode == $vid_mode) {$argstr = $argstr . "Video ($max_vid)";}
 elseif ($max_main) {$argstr = $argstr . "Main ($max_main)";}
 else           {$argstr = $argstr . "Default, Main (2)";}
 $argstr = $argstr . "\n";
-$argstr = $argstr . "Video File: $video_file\nInput Phrase File: $in_file\nOutput File: $out_file";
+$argstr = $argstr . "Video File: $video_file\nInput Phrase File: $lang_phrase_file\nOutput File: $out_file";
 
 debug_print("***********************\n$argstr\n***********************\n");
 
@@ -430,6 +455,10 @@ $tot_days  = 0;
 # Generate Videos array from file. Determine starting and ending lessons.
 $videos = GET_VIDEOS($video_file, $csv_char);
 debug_print("Nbr videos=" . count($videos) . "\n");
+
+if ($language != 'English') {
+	$videos = getVideoNames($videos, $language, $course); # get array of video names in the target language
+}
 
 ### Print out array of hashes for debug purposes
 if ($debug) {
@@ -471,7 +500,7 @@ debug_print("Highest Lesson: $max_lesson, Lowest Lesson: $min_lesson\n");
 
 # Generate Phrases and Canon hashes (Language specific)
 
-GET_PHRASES($in_file);
+GET_PHRASES($lang_phrase_file);
 $phrases = $phrase_hash; # ***** names should be changed to just $phrases and $canon in GET_PHRASES
 $canon   = $canon_hash;
 
@@ -539,7 +568,7 @@ function INITIALIZE_HTML () {
 ### 
 ################################################################################
 
-	global $course, $outfile, $embed_stylesheet;
+	global $course, $outfile, $embed_stylesheet, $language;
 	
 	fwrite($outfile, "<!DOCTYPE html>\n");
 	fwrite($outfile, "<html>\n");
@@ -552,12 +581,22 @@ function INITIALIZE_HTML () {
 	
 	### Style Sheet
 	if ($embed_stylesheet) {
-		$styles = file_get_contents("./css/styles.css");
+		doLog("Checking for specific stylesheet './css/styles" . $language . ".css' for $language\n");
+		if (file_exists("./css/styles" . $language . ".css")) {
+			doLog("Found $language stylesheet\n");
+			$styles = file_get_contents("./css/styles" . $language . ".css");
+		} else {
+			$styles = file_get_contents("./css/styles.css");
+		}
 		fwrite($outfile, "<style>\n");
 		fwrite($outfile, $styles);
 		fwrite($outfile, "</style>\n");
 	} else {
-		fwrite($outfile, "\t<link rel='stylesheet' type='text/css' href='./css/styles.css'>\n");
+		if (file_exists("./css/styles" . $language . ".css")) {
+			fwrite($outfile, "\t<link rel='stylesheet' type='text/css' href='./css/styles" . $language . ".css'>\n");
+		} else {
+			fwrite($outfile, "\t<link rel='stylesheet' type='text/css' href='./css/styles.css'>\n");
+		}
 	}
 	
 	HTML_HEADER();
@@ -579,6 +618,13 @@ function FINALIZE_HTML () {
 	global $outfile;
 	
 	### Terminate Body Element
+	fwrite($outfile, "\t<script>\n");
+	fwrite($outfile, "\tdocument.querySelectorAll('a').forEach(link => { // make links open in a new tab\n");
+	fwrite($outfile, "\t  link.setAttribute('target', '_blank');\n");
+	fwrite($outfile, "\t  link.setAttribute('rel', 'noopener noreferrer');\n");
+	fwrite($outfile, "\t});\n");
+	fwrite($outfile, "\t</script>\n");
+
 	fwrite($outfile, "\t</body>\n");
 	
 	### Terminate HTML Element

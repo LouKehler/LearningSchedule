@@ -1,0 +1,77 @@
+/*
+Design by Sheldon Kehler
+Last updated: Jan 17, 2025
+*/
+
+@font-face {
+	font-family: Hebrew;
+	src: url(./fonts/SILEOT.TTF);
+}
+@font-face {
+	font-family: Greek;
+	src: url(./fonts/GALSILR.TTF);
+}
+@font-face {
+	font-family: Scheherazade-Arabic;
+	src: url(./fonts/ScheherazadeNew-Regular.ttf);
+}
+
+body {
+/*	background: #003366 url(../images/back_all.gif); */
+	font: Scheherazade-Arabic; /* 13px Tahoma, Verdana, Arial, Helvetica, sans-serif; */
+/*	color: #333333; */
+/*	min-width: 570px; */
+	direction: rtl;
+	font-family: Scheherazade-Arabic;
+}
+
+H1 {
+	font-size: 24px;
+}
+H2 {
+	font-size: 22px;
+}
+H3 {
+	font-size: 20px;
+}
+
+p {
+	font-size: 18px;
+	line-height: 18px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+
+a {
+	color: blue;
+}
+
+/* Style its checked state...with a ticked icon */
+input[type="checkbox"] {
+	opacity: 1;
+	pointer-events: none;
+}
+
+.link a {
+/*	float: left; */
+    display: block;
+	text-align: left;
+	text-decoration: none;
+/*	font-weight: bold; */
+	font-size: 18px;
+/*	text-transform: uppercase; */
+	padding-left: 22px;
+}
+
+.total_time {
+	font-weight: bold;
+}
+
+.more {
+	font-weight: bold;
+	padding-top: 22px;
+}
+
+.week {
+	padding-top: 22px;
+}

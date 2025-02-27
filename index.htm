@@ -4,10 +4,9 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, user-scalable=yes">
   <title>Aleph With Beth and Alpha with Angela Learning Schedule</title>
-  <link rel="icon" href=".images/cropped-Aleph_with_Beth-logo-beth-transparent-1-32x32.png" sizes="32x32" />
+  <link rel="icon" href="./images/cropped-Aleph_with_Beth-logo-beth-transparent-1-32x32.png" sizes="32x32" />
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="js/localization.js"></script>
-  <link rel="shortcut icon" type="image/png" href="favicon.png">
   <!--
   // Todo:
   //    - Figure out a way to generate the PDFs automatically from PHP without the overhead of a large library.
@@ -24,11 +23,13 @@
   p    {color: black;}
   .section_header {
 /*         width: 670px; */
-        border: 2px solid darkblue;
-        padding: 10px;
-        margin: 10px;
+      max-width: 6.5in;
+      border: 2px solid darkblue;
+      padding: 10px;
+      margin: 10px;
   }
   #display {
+      max-width: 6.8in;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: wrap;
@@ -70,7 +71,8 @@
     </select><br><br>
     
     <button type="button" id="print_button" onclick="printLearningSchedule();">Print</button>
-    
+    <!-- button type="button" id="select_button" onclick="selectLearningSchedule();">Select All</button -->
+    <button type="button" id="copy_button" onclick="copyLearningSchedule();">Copy</button>
     <!-- button type="button" id="download_PDF_button" onclick="downloadPDF();">Download PDF</button -->
   </div>
   
@@ -134,6 +136,11 @@
       if (elem_id == 'lang') {
             setLanguage();
       }
+      if (elem_id == 'learning_program') {
+            var e = document.getElementById("learning_program");
+            var learning_program = e.value;
+            changeFavicon(learning_program == "Aleph" ? "./images/cropped-Aleph_with_Beth-logo-beth-transparent-1-32x32.png" : "./images/cropped-alpha-with-angela-logo-transparent-a-square-32x32.png");
+      }
       load_from_page();
   }
 
@@ -143,7 +150,8 @@
   function load_from_page() {
         var e = document.getElementById("learning_program");
         var learning_program = e.value;
-        var learning_program_abbr = (e.options[e.selectedIndex].text == "Aleph with Beth") ? "AWB" : "AWA";
+        console.log("Learning program=" + learning_program);
+        var learning_program_abbr = (learning_program == "Aleph") ? "AWB" : "AWA";
         
         e = document.getElementById("lang");
         lang = e.value;
@@ -157,7 +165,7 @@
         var opts, out_file;
         out_file = "./html/" + learning_program_abbr + "Sched_T" + time.substr(0, 2) + "_" + lang + ".htm";
         opts = '&t=' + time + '&v=' + vid_file + '&o=' + out_file + '&f=' + phrase_file +  '&l=' + lang + '&c=' + learning_program;
-//~         console.log(opts);
+        console.log(opts);
         generate(opts, out_file);
   }
 
@@ -190,13 +198,15 @@
 //~   }).click();
 //~   }
 
-  function openInDiv(href) { // opens the output file in a new tab
+  function openInDiv(href) { // opens the output file in the display div
         var e = document.getElementById("learning_program");
-        var value = e.value;
-        var learning_program_abbr = (e.options[e.selectedIndex].text == "Aleph with Beth") ? "AWB" : "AWA";
+        var learning_program = e.value;
+        var learning_program_abbr = (learning_program == "Aleph") ? "AWB" : "AWA";
+        console.log("learning_program=" + learning_program + " abbr=" + learning_program_abbr);
         
         e = document.getElementById("lang");
         var lang = e.value;
+        lang = lang.replace(' ', '%20'); // can't have spaces in url
         
         e = document.getElementById("time");
         var time = e.options[e.selectedIndex].text.substr(0, 2);
@@ -207,6 +217,7 @@
 //~                 $(window).on('load', function() {
                 console.log('Display has loaded!');
         });
+        console.log("loading ./html/" + learning_program_abbr + "Sched_T" + time + "_" + lang + ".htm" + "?rnd=" + versionUpdate);
         $("#display").load("./html/" + learning_program_abbr + "Sched_T" + time + "_" + lang + ".htm" + "?rnd=" + versionUpdate);
         console.log('Display has loaded!');
   }
@@ -217,36 +228,74 @@
         $("#section_header").show();
   }
   
-  function download_file(fileURL, fileName) {
-      var link = document.createElement('a');
-      link.href = fileURL;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  function copyLearningSchedule() {
+      var dsply = document.getElementById("display");
+      selectText(dsply);
+      try {
+          var successful = document.execCommand('copy');
+          var msg = successful ? 'successful' : 'unsuccessful';
+          alert(localization[lang]['copied']);
+      } catch (err) {
+          alert('Unable to copy, error : ' + err.message);
+      }
+      clearSelection();
   }
-
-  function downloadPDF() {
-        var e = document.getElementById("learning_program");
-        var value = e.value;
-        var learning_program = (e.options[e.selectedIndex].text == "Aleph with Beth") ? "AWB" : "AWA";
-        
-        e = document.getElementById("lang");
-        var lang = e.value;
-        
-        e = document.getElementById("time");
-        var time = e.options[e.selectedIndex].text.substr(0, 2);
-        
-        var versionUpdate = (new Date()).getTime();  // force update
-
-        $("#display").on('change', function() {
-//~                 $(window).on('load', function() {
-                console.log('Display has loaded!');
-        });
-        download_file("./pdf/" + learning_program + "Sched_T" + time + "_" + lang + ".pdf" + "?rnd=" + versionUpdate,  learning_program + "Sched_T" + time + "_" + lang + ".pdf");
-//~         $("#display").load("./pdf/" + learning_program + "Sched_T" + time + "_" + lang + ".pdf" + "?rnd=" + versionUpdate);
-//~         console.log('Display has loaded!');
+  function selectText(element) {
+        var doc = document
+            , text = element
+            , range, selection
+        ;
+        if (doc.body.createTextRange) { //ms
+            range = doc.body.createTextRange();
+            range.moveToElementText(text);
+            range.select();
+        } else if (window.getSelection) { //all others
+            selection = window.getSelection();
+            range = doc.createRange();
+            range.selectNodeContents(text);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
   }
+  function clearSelection() {
+       if (window.getSelection) {window.getSelection().removeAllRanges();}
+       else if (document.selection) {document.selection.empty();}
+  }
+//~   function selectLearningSchedule() {
+//~       var dsply = document.getElementById("display");
+//~       selectText(dsply);
+//~   }
+  
+//~   function download_file(fileURL, fileName) {
+//~       var link = document.createElement('a');
+//~       link.href = fileURL;
+//~       link.download = fileName;
+//~       document.body.appendChild(link);
+//~       link.click();
+//~       document.body.removeChild(link);
+//~   }
+
+//~   function downloadPDF() {
+//~         var e = document.getElementById("learning_program");
+//~         var learning_program = e.value;
+//~         var learning_program_abbr = (learning_program == "Aleph") ? "AWB" : "AWA";
+//~         
+//~         e = document.getElementById("lang");
+//~         var lang = e.value;
+//~         
+//~         e = document.getElementById("time");
+//~         var time = e.options[e.selectedIndex].text.substr(0, 2);
+//~         
+//~         var versionUpdate = (new Date()).getTime();  // force update
+
+//~         $("#display").on('change', function() {
+//~ //                 $(window).on('load', function() {
+//~                 console.log('Display has loaded!');
+//~         });
+//~         download_file("./pdf/" + learning_program + "Sched_T" + time + "_" + lang + ".pdf" + "?rnd=" + versionUpdate,  learning_program + "Sched_T" + time + "_" + lang + ".pdf");
+//~ //         $("#display").load("./pdf/" + learning_program + "Sched_T" + time + "_" + lang + ".pdf" + "?rnd=" + versionUpdate);
+//~ //         console.log('Display has loaded!');
+//~   }
   
   // functions to set the text of each of the fields of this page according to language
   function setLanguagesSelector(lang) {
@@ -268,6 +317,7 @@
       options_str += '<option value="Alpha">' + localization[lang]['Alpha'] + '</option>';
       e.innerHTML = options_str;
       e.value = program;
+      changeFavicon(program == "Aleph" ? "./images/cropped-Aleph_with_Beth-logo-beth-transparent-1-32x32.png" : "./images/cropped-alpha-with-angela-logo-transparent-a-square-32x32.png");
   }
     
   function setLanguage() {
@@ -277,13 +327,27 @@
         $('#lang_label').text(localization[lang]['language']);
         $('#time_per_day_label').text(localization[lang]['timePerDay']);
         $('#learning_program_label').text(localization[lang]['Learning program']);
-        $('#load_button').text(localization[lang]['load']);
+//~         $('#load_button').text(localization[lang]['load']);
         $('#print_button').text(localization[lang]['print']);
-        $('#download_PDF_button').text(localization[lang]['downloadPDF']);
+        $('#copy_button').text(localization[lang]['copy']);
+//~         $('#download_PDF_button').text(localization[lang]['downloadPDF']);
         $('#title1').text(localization[lang]['title1']);
         $('#title2').text(localization[lang]['title2']);
         setLanguagesSelector(lang);
         setLearningProgramSelector(lang);
+        e = document.body;
+        e.setAttribute('dir', localization[lang]['direction'] == 'RTL' ? 'rtl' : 'ltr');
+  }
+  function changeFavicon(src) {
+      var link = document.createElement('link'),
+            oldLink = document.getElementById('dynamic-favicon');
+      link.id = 'dynamic-favicon';
+      link.rel = 'shortcut icon';
+      link.href = src;
+      if (oldLink) {
+            document.head.removeChild(oldLink);
+      }
+      document.head.appendChild(link);
   }
 
   // when the page is loaded get the values of each parameter from cookies they are stored in
@@ -293,6 +357,8 @@
   setLanguage();
   // load the page. Subsequent loads will be done anytime a parameter changes.
   load_from_page();
-  </script>
+  
+  document.head = document.head || document.getElementsByTagName('head')[0];
+</script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 ##########################################################################################
 ### Language-specific File for Alpha with Angela Learning Schedule
 ### 
-### TARGET LANGUAGE: Portuguese
+### TARGET LANGUAGE: English
 ### 
 ### Input file for awbsched.pl.
 ### 
@@ -39,6 +39,29 @@
 ### Comments and blank lines will be ignored.
 ### 
 ##########################################################################################
+### 
+### 8/15/2022: Languages already being translated by AwB.
+### English, Spanish, Portuguese, French, Russian, Hindi, Chinese, Kiswahili, Bahasa (Indonesia), Polish
+### 
+### 
+### From https://www.indexmundi.com/world/languages.html
+### Languages:
+### 
+### most-spoken languages: 
+### English 16.5%, Mandarin Chinese 14.6%, Hindi 8.3%, Spanish 7%, 
+### French 3.6%, Arabic 3.6%, Bengali 3.4%, Russian 3.4%, Portuguese 3.3%, Indonesian 2.6% (2020 est.) 
+### 
+### most-spoken first languages: 
+### Mandarin Chinese 12.3%, Spanish 6%, English 5.1%, Arabic 5.1%, Hindi 3.5%, Bengali 3.3%, 
+### Portuguese 3%, Russian 2.1%, Japanese 1.7%, Punjabi, Western 1.3%, Javanese 1.1% (2018 est.)
+### 
+### The six UN languages:
+### Arabic, Chinese (Mandarin), English, French, Russian, and Spanish (Castilian)
+### - are the mother tongue or second language of about 45% of the world's population, 
+###   and are the official languages in more than half the states in the world
+### 
+##########################################################################################
+
 
 ##########################################################################################
 ### Tag for Locale (Used to select the correct video titles from the database file)
@@ -50,25 +73,31 @@
 #<locale>en_US
 <locale>en_US
 
+#<font>Arial
+<font>Arial
+
+#<direction>LTR
+<direction>LTR
+
 ##########################################################################################
 ### Tags for informational text at the beginning of the learning schedule
 ### Must be of the form 'introN' where N is a number (1 or more digits). 
 ### N = 0 for the heading. N values must be sequential.
 ##########################################################################################
 #<intro0>Study Schedule for Lessons &&
-<intro0>Horario de Aprendizaje para Lecciones &&
+<intro0>Study Schedule for Lessons &&
 
-#<intro1>A plan to use Alpha with Angela videos to learn grego.    
-<intro1>Un plan para usar los videos de Alpha con Angela para aprender grego.
+#<intro1>A plan to use Alpha with Angela videos to learn Greek.    
+<intro1>A plan to use Alpha with Angela videos to learn Greek.
 
 #<intro2>No prior knowledge is assumed.
-<intro2>No se asume ningún conocimiento previo.
+<intro2>No prior knowledge is assumed.
 
 #<intro3>Feel free to download and tailor it to your own schedule.
-<intro3>Siéntase libre de descargarlo y adaptarlo a su propio horario.
+<intro3>Feel free to download and tailor it to your own schedule.
 
 #<intro4>Print it out if you can and start checking off your progress!
-<intro4>¡Imprímalo si puede y empieza a comprobar tu progreso!
+<intro4>Print it out if you can and start checking off your progress!
 
 ##########################################################################################
 ### Tags for How-to Tips and Videos at the beginning of the learning schedule
@@ -77,19 +106,19 @@
 ### Tab characters in front of URLs for formatting must be in this file.
 ##########################################################################################
 #<howto0>Videos to help you get started
-<howto0>Videos que pueden ayudarte a empezar
+<howto0>Videos to help you get started
 
-#<howto1>How to Use Alpha with Angela Videos to Learn Biblical Greek (LANGUAGE, MM:SS)
-<howto1>How to use Alpha with Angela videos - Communicative Biblical Greek (cualquier idioma, 6:36)
+#<howto1>How to Use Alpha with Angela Videos to Learn Biblical Greek (English, 10:19)
+<howto1>How to Use Alpha with Angela Videos to Learn Biblical Greek (English, 10:19)
 
 #<howto2>https://www.youtube.com/watch?v=GEJYWpZV2TM (language-specific link)
-<howto2>https://www.youtube.com/watch?v=_ZM0Y-Xy69M
+<howto2>https://www.youtube.com/watch?v=GEJYWpZV2TM
 
 #<howto3>Seven tips for studying Biblical languages (LANGUAGE, MM:SS)
-<howto3>7 tips para el estudio de los idiomas bíblicos (Español, 8:31)
+<howto3>Seven tips for studying Biblical languages (English, 6:53)
 
 #<howto4>https://www.youtube.com/watch?v=KDpOkbrVFuM (language-specific link)
-<howto4>https://www.youtube.com/watch?v=yoxv0dzEMlo
+<howto4>https://www.youtube.com/watch?v=KDpOkbrVFuM
 
 #<howto5>How to Keep Growing in Greek if You’ve Reached the End of Our Videos 
 <howto5>How to Keep Growing in Greek if You’ve Reached the End of Our Videos 
@@ -103,179 +132,175 @@
 ### N = 0 for the heading. N values must be sequential.
 ### Tab characters in front of URLs for formatting must be in this file.
 ##########################################################################################
-
 #<links0>Useful Links
-<links0>Enlaces útiles
+<links0>Useful Links
 
 #<links1>Alpha with Angela Home Page
-<links1>La página de inicio de Alpha with Angela
+<links1>Alpha with Angela Home Page
 
 #<links2>https://freegreek.online
-<links2>https://freegreek.online/es/elementor-2662/
-
+<links2>https://freegreek.online
 
 #<links3>All Resources (Lesson Scripts, Quizzes, Grammar, Vocabulary, Worksheets, etc.):
-<links3>Todos los Materiales (Textos del guión, Exámenes, Gramática, Vocabulario, Hojas de trabajo, etc.):
+<links3>All Resources (Lesson Scripts, Quizzes, Grammar, Vocabulary, Worksheets, etc.):
 
 #<links4>https://freegreek.online/resources
-<links4>https://freegreek.online/es/recursos/
+<links4>https://freegreek.online/resources
 
-#<links5>Video Playlists: https://www.youtube.com/c/AlphawithAngela/playlists
-<links5>Lista de videos: https://www.youtube.com/c/AlphawithAngela/playlists
+#<links5>Video Playlists: https://www.youtube.com/@AlphawithAngela/playlists
+<links5>Video Playlists: https://www.youtube.com/@AlphawithAngela/playlists
 
 #<links6>Quizzes: https://greek.bibleling.org/#/14
-<links6>Exámenes: https://greek.bibleling.org/#/14
+# <links6>Quizzes: https://greek.bibleling.org/#/14
 
-#<links7>Alphabet Practice Worksheet:          
-<links7>Hoja de trabajo para practicar el alfabeto:    
+#<links6>Alphabet Practice Worksheet:          
+<links6>Alphabet Practice Worksheet:    
      
-#<links8>https://www.mediafire.com/file/lgz8tc0udvmipds/Alpha_with_Angela_Writing_the_Alphabet_worksheet.pdf/file
-<links8>https://www.mediafire.com/file/lgz8tc0udvmipds/Alpha_with_Angela_Writing_the_Alphabet_worksheet.pdf/file
+#<links7>https://drive.google.com/file/d/1AKbspwYzNfQt3muUmpj-8nyh8LjOYIud/view?usp=share_link
+<links7>https://drive.google.com/file/d/1AKbspwYzNfQt3muUmpj-8nyh8LjOYIud/view?usp=share_link
 
 ##########################################################################################
 ### Tags for various steps based on video type in the learning schedule
 ##########################################################################################
 
 #<watch_listen>Watch Lesson && just listening.
-<watch_listen>Vea la Lección && solo escuchando.
+<watch_listen>Watch Lesson && just listening.
 
 #<watch_repeat>Watch Lesson && repeating aloud.
-<watch_repeat>Vea la Lección && repitiéndola en voz alta.
+<watch_repeat>Watch Lesson && repeating aloud.
 
 #<watch_story_listen>Watch Greek Easy Story && just listening.
-<watch_story_listen>Vea la historia fácil en grego && solo escuchando.
+<watch_story_listen>Watch Greek Easy Story && just listening.
 
 #<watch_story_repeat>Watch Greek Easy Story && repeating aloud.
-<watch_story_repeat>Vea la historia fácil en grego && repitiéndola en voz alta.
+<watch_story_repeat>Watch Greek Easy Story && repeating aloud.
 
 #<write10>Practice writing each of the Greek letters from Lesson && ten times.
-<write10>Practique escribiendo cada una de las letras hebreas de la Lección && diez veces.
+<write10>Practice writing each of the Greek letters from Lesson && ten times.
 
-#<related>Review video Lesson &&.
-<related>Revise el video Lección &&.
+#<related>Review video for Lesson &&.
+<related>Review video for Lesson &&.
 
 #<review_game>Watch review video, &&, and try to respond before hearing the answer.
-<review_game>Vea el video de repaso, &&, e intente responder antes de escuchar la respuesta.
+<review_game>Watch review video, &&, and try to respond before hearing the answer.
 
 #<read_script>Read the script for Lesson && aloud twice.
-<read_script>Lea el texto del guión de la Lección && en voz alta dos veces.
+<read_script>Read the script for Lesson && aloud twice.
 
-#<read_verse>Read verses && aloud twice.
-<read_verse>Lea los versículos && en voz alta dos veces.
+#<read_verse>Read verse(s) && aloud twice.
+<read_verse>Read verse(s) && aloud twice.
 
 #<quiz_yes>Take Quiz && online at Bibleling.org. I got _____% the 1st time (and _____% the 2nd time).
-<quiz_yes>Tome el examen && en línea en Bibleling.org. Obtuve _____% la 1ra vez (y _____% la 2da vez).
+<quiz_yes>Take Quiz && online at Bibleling.org. I got _____% the 1st time (and _____% the 2nd time).
 
 #<quiz_no>Keep checking https://greek.bibleling.org/#/14 for new quizzes for lesson &&.
-<quiz_no>Sigua revisando https://greek.bibleling.org/#/14 para ver si hay nuevos exámenes para la Lección &&.
+<quiz_no>Keep checking https://greek.bibleling.org/#/14 for new quizzes for lesson &&.
 
 #<extra>Video of story from Lesson && is available for review.
-<extra>Hay un video de la historia de la Lección && para revisar.
+<extra>Video of story from Lesson && is available for review.
 
 #<alpha_extra>Watch supplemental video for Lesson && twice.
-<alpha_extra>Vea el video complementario para la Leccíon && dos veces.
+<alpha_extra>Watch supplemental video for Lesson && twice.
 
 #<optional>Watch optional video &&.
-<optional>Vea el video opcional &&.
+<optional>Watch optional video &&.
 
 #<worship>Watch song video &&. Try to sing along.
-<worship>Vea el video de la canción &&. Tratar de cantar al mismo tiempo.
+<worship>Watch song video &&. Try to sing along.
 
-#<time>Approximate Time: &&
-<time>Tiempo Aproximado: &&
+#<time>Approximate Amount of Time: &&
+<time>Approximate Amount of Time: &&
 
 #<longest>Longest Study Day (mm:ss): &&
-<longest>Día de estudio más largo (mm:ss): &&
+<longest>Longest Study Day (mm:ss): &&
 
 #<shortest>Shortest Study Day (mm:ss): &&
-<shortest>Día de estudio más corto (mm:ss): &&
+<shortest>Shortest Study Day (mm:ss): &&
 
 #<average>Average Study Day (mm:ss): &&
-<average>Día de estudio medio (mm:ss): &&
+<average>Average Study Day (mm:ss): &&
 
 #<total_days>Total Number of Study Days: &&
-<total_days>Cuenta total de los días de estudio: &&
+<total_days>Total Number of Study Days: &&
 
 #<total_time>Total Study Time (hh:mm:ss): &&
-<total_time>Tiempo Total de Estudio (hh:mm:ss): &&
+<total_time>Total Study Time (hh:mm:ss): &&
 
 #<week>Week
-<week>Semana
-
+<week>Week
 #<day>Day
-<day>Día
-
+<day>Day
 #<more>More Lessons Are Coming!
-<more>¡Vienen más lecciones!
+<more>More Lessons Are Coming!
 #
 ##########################################################################################
 ### Tags Books of the Bible
 ##########################################################################################
 <Bible>
-<Genesis>Gênesis
-<Exodus>Êxodo
-<Leviticus>Levítico
-<Numbers>Números
-<Deuteronomy>Deuteronômio
-<Joshua>Josué
-<Judges>Juizes
-<Ruth>Rute
+<Genesis>Genesis
+<Exodus>Exodus
+<Leviticus>Leviticus
+<Numbers>Numbers
+<Deuteronomy>Deuteronomy
+<Joshua>Joshua
+<Judges>Judges
+<Ruth>Ruth
 <1 Samuel>1 Samuel
 <2 Samuel>2 Samuel
-<1 Kings>1 Reis
-<2 Kings>2 Reis
-<1 Chronicles>1 Crônicas
-<2 Chronicles>2 Crônicas
-<Ezra>Esdras
-<Nehemiah>Neemias
-<Esther>Ester
-<Job>Jó
-<Psalm>Salmos
-<Proverbs>Provérbios
-<Ecclesiastes>Eclesiastes
-<Song of Solomon>Cantares
-<Isaiah>Isaías
-<Jeremiah>Jeremias
-<Lamentations>Lamentações
-<Ezekiel>Ezequiel
+<1 Kings>1 Kings
+<2 Kings>2 Kings
+<1 Chronicles>1 Chronicles
+<2 Chronicles>2 Chronicles
+<Ezra>Ezra
+<Nehemiah>Nehemiah
+<Esther>Esther
+<Job>Job
+<Psalm>Psalm
+<Proverbs>Proverbs
+<Ecclesiastes>Ecclesiastes
+<Song of Solomon>Song of Solomon
+<Isaiah>Isaiah
+<Jeremiah>Jeremiah
+<Lamentations>Lamentations
+<Ezekiel>Ezekiel
 <Daniel>Daniel
-<Hosea>Oséias
+<Hosea>Hosea
 <Joel>Joel
-<Amos>Amós
-<Obadiah>Obadias
-<Jonah>Jonas
-<Micah>Miquéias
-<Nahum>Naum
-<Habbakkuk>Habacuque
-<Zephaniah>Sofonías
-<Haggai>Ageu
-<Zechariah>Zacarias
-<Malachi>Malaquías
-<Matthew>Mateus
-<Mark>Marcos
-<Luke>Lucas
-<John>João
-<Acts>Atos
-<Romans>Romanos
-<1 Corinthians>1 Corintios
-<2 Corinthians>2 Corintios
-<Galatians>Gálatas
-<Ephesians>Efésios
-<Philippians>Filipensis
-<Colossians>Colossenses
-<1 Thessalonians>1 Tessalonicenses
-<2 Thassalonians>2 Tessalonicenses
-<1 Timothy>1 Timóteo
-<2 Timothy>2 Timóteo
-<Titus>Tito
-<Philemon>Filemón
-<Hebrews>Hebreus
-<James>Tiago
-<1 Peter>1 Pedro
-<2 Peter>2 Pedro
-<1 John>1 João
-<2 John>2 João
-<3 John>3 João
-<Jude>Judas
-<Revelation>Apocalipse
+<Amos>Amos
+<Obadiah>Obadiah
+<Jonah>Jonah
+<Micah>Micah
+<Nahum>Nahum
+<Habbakkuk>Habbakkuk
+<Zephaniah>Zephaniah
+<Haggai>Haggai
+<Zechariah>Zechariah
+<Malachi>Malachi
+<Matthew>Matthew
+<Mark>Mark
+<Luke>Luke
+<John>John
+<Acts>Acts
+<Romans>Romans
+<1 Corinthians>1 Corinthians
+<2 Corinthians>2 Corinthians
+<Galatians>Galatians
+<Ephesians>Ephesians
+<Philippians>Philippians
+<Colossians>Colossians
+<1 Thessalonians>1 Thessalonians
+<2 Thassalonians>2 Thessalonians
+<1 Timothy>1 Timothy
+<2 Timothy>2 Timothy
+<Titus>Titus
+<Philemon>Philemon
+<Hebrews>Hebrews
+<James>James
+<1 Peter>1 Peter
+<2 Peter>2 Peter
+<1 John>1 John
+<2 John>2 John
+<3 John>3 John
+<Jude>Jude
+<Revelation>Revelation
 </Bible>
